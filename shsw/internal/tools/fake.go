@@ -6,17 +6,17 @@ import (
 )
 
 type FakeTool struct {
-	name   string
+	*DefaultTool
 	exists bool
 	sleep  int
 }
 
 func NewFakeTool(name string, exists bool, sleep int) *FakeTool {
-	return &FakeTool{name: name, exists: exists, sleep: sleep}
-}
-
-func (f FakeTool) GetName() string {
-	return f.name
+	return &FakeTool{
+		DefaultTool: &DefaultTool{name: name, logFile: "", stateFile: ""},
+		exists:      exists,
+		sleep:       sleep,
+	}
 }
 
 func (f FakeTool) Check() bool {
@@ -24,7 +24,7 @@ func (f FakeTool) Check() bool {
 }
 
 func (f FakeTool) Run() {
-	fmt.Println("Running tool" + f.name)
+	fmt.Println("Running tool " + f.name)
 	time.Sleep(time.Duration(f.sleep) * time.Second)
-	fmt.Println("Tool" + f.name + " finished")
+	fmt.Println("Tool " + f.name + " finished")
 }

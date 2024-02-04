@@ -6,7 +6,7 @@ import (
 )
 
 func main() {
-	e := engine.NewEngine()
+	e := engine.NewEngine("./tmp")
 	e.AddTool(tools.NewFakeTool("fake1", true, 1))
 	e.AddTool(tools.NewFakeTool("fake2", false, 0))
 	e.Run()
