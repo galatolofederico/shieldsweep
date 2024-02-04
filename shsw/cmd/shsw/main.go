@@ -1,8 +1,8 @@
 package main
 
 import (
-	"github.com/galatolofederico/shieldsweep/internal/engine"
-	"github.com/galatolofederico/shieldsweep/internal/tools"
+	"github.com/galatolofederico/shieldsweep/shsw/internal/engine"
+	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
 )
 
 func main() {

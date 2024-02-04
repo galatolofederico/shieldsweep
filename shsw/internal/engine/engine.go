@@ -3,7 +3,7 @@ package engine
 import (
 	"fmt"
 
-	"github.com/galatolofederico/shieldsweep/internal/tools"
+	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
 )
 
 type Engine struct {
