@@ -2,8 +2,10 @@ package engine
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
+	"sync"
 
 	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
@@ -16,7 +18,8 @@ type EngineToolConfig struct {
 }
 
 type EngineConfig struct {
-	Tools []EngineToolConfig
+	Parallelism int
+	Tools       []EngineToolConfig
 }
 
 type Engine struct {
@@ -50,6 +53,7 @@ func NewEngine(home string) *Engine {
 				StateFile: filepath.Join(home, config.Name, "state", "state.json"),
 			}
 			toolConfig.Load()
+			//TODO: check if tool already exists
 			engine.tools = append(engine.tools, toolConfig)
 		} else {
 			color.Red("[!] Tool " + config.Name + " not found")
@@ -59,7 +63,34 @@ func NewEngine(home string) *Engine {
 }
 
 func (engine *Engine) Run() {
-	for _, config := range engine.tools {
-		config.Run()
+	works := make(chan tools.Tool)
+	results := make(chan tools.ToolResult)
+
+	go func() {
+		for _, tool := range engine.tools {
+			works <- tool
+		}
+		close(works)
+	}()
+
+	var wg sync.WaitGroup
+
+	for i := 0; i < engine.config.Parallelism; i++ {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			for config := range works {
+				config.Run(results)
+			}
+		}()
+	}
+
+	go func() {
+		wg.Wait()
+		close(results)
+	}()
+
+	for res := range results {
+		fmt.Println(res)
 	}
 }

@@ -1,4 +1,5 @@
 {
+    "Parallelism": 2,
     "Tools": [
         {
             "Name": "dummy1",
@@ -19,9 +20,9 @@
         {
             "Name": "dummy3",
             "Config": {
-                "Available": false,
-                "Delay": 0,
-                "NewLog": false
+                "Available": true,
+                "Delay": 2,
+                "NewLog": true
             }
         }
     ]

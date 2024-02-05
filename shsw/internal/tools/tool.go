@@ -29,7 +29,15 @@ type Tool struct {
 	StateFile string
 }
 
-func (config *Tool) Run() {
+type ToolResult struct {
+	Name     string
+	IsLogNew bool
+	Error    error
+}
+
+func (config *Tool) Run(ch chan<- ToolResult) {
+	result := ToolResult{Name: config.Name, IsLogNew: false, Error: nil}
+	//TODO: implement log hash check
 	utils.CheckPathForFile(config.LogFile)
 	config.State.LastRun = time.Now().String()
 	config.State.Running = true
@@ -37,12 +45,15 @@ func (config *Tool) Run() {
 	if err != nil {
 		config.State.LastError = err.Error()
 		config.State.Failing = true
+		result.Error = err
+
 	} else {
 		config.State.LastError = ""
 		config.State.Failing = false
 	}
 	config.State.Running = false
 	config.Save()
+	ch <- result
 }
 
 func (config *Tool) Load() {
