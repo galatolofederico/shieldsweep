@@ -23,7 +23,7 @@ func (runner *DummyToolRunner) Check() bool {
 	return runner.exists
 }
 
-func (runner *DummyToolRunner) Run(config ToolConfig) {
+func (runner *DummyToolRunner) Run(config ToolConfig) error {
 	fmt.Println("Running tool " + config.Name)
 	time.Sleep(time.Duration(runner.sleep) * time.Second)
 	if rand.Float64() < 0.75 {
@@ -35,4 +35,5 @@ func (runner *DummyToolRunner) Run(config ToolConfig) {
 		}
 	}
 	fmt.Println("Tool " + config.Name + " finished")
+	return nil
 }

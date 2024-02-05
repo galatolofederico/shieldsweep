@@ -55,6 +55,6 @@ func NewEngine(home string) *Engine {
 
 func (engine *Engine) Run() {
 	for _, config := range engine.toolsConfigs {
-		config.Runner.Run(config)
+		config.Run()
 	}
 }
