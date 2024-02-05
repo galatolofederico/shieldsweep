@@ -121,3 +121,11 @@ func (engine *Engine) Run() []tools.ToolResult {
 
 	return runResults
 }
+
+func (engine *Engine) Status() []tools.ToolState {
+	ret := []tools.ToolState{}
+	for _, tool := range engine.tools {
+		ret = append(ret, tool.State)
+	}
+	return ret
+}

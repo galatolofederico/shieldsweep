@@ -13,7 +13,7 @@ type ToolState struct {
 	LastLogHash string
 	LastError   string
 	Running     bool
-	Failing     bool
+	Failed      bool
 }
 
 type ToolRunner interface {
@@ -44,12 +44,12 @@ func (config *Tool) Run(ch chan<- ToolResult) {
 	err := config.Runner.Run(*config)
 	if err != nil {
 		config.State.LastError = err.Error()
-		config.State.Failing = true
+		config.State.Failed = true
 		result.Error = err
 
 	} else {
 		config.State.LastError = ""
-		config.State.Failing = false
+		config.State.Failed = false
 	}
 	config.State.Running = false
 	config.Save()
@@ -64,7 +64,7 @@ func (config *Tool) Load() {
 			LastLogHash: "none",
 			LastError:   "",
 			Running:     false,
-			Failing:     false,
+			Failed:      false,
 		}
 		config.Save()
 	}
