@@ -2,6 +2,7 @@ package tools
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"time"
 
@@ -41,6 +42,7 @@ func (config *Tool) Run(ch chan<- ToolResult) {
 	utils.CheckPathForFile(config.LogFile)
 	config.State.LastRun = time.Now().String()
 	config.State.Running = true
+	fmt.Printf("Setting running to true for %s at address %p %p \n", config.Name, &config.State.Running, &config.State)
 	err := config.Runner.Run(*config)
 	if err != nil {
 		config.State.LastError = err.Error()

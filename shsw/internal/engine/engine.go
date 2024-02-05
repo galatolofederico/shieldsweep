@@ -6,6 +6,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
@@ -26,6 +27,15 @@ type Engine struct {
 	home   string
 	tools  []tools.Tool
 	config EngineConfig
+}
+
+func (engine *Engine) GetTool(name string) *tools.Tool {
+	for i, tool := range engine.tools {
+		if tool.Name == name {
+			return &engine.tools[i]
+		}
+	}
+	return nil
 }
 
 func NewEngine(home string) *Engine {
@@ -53,7 +63,9 @@ func NewEngine(home string) *Engine {
 				StateFile: filepath.Join(home, config.Name, "state", "state.json"),
 			}
 			toolConfig.Load()
-			//TODO: check if tool already exists
+			if engine.GetTool(config.Name) != nil {
+				panic(errors.Errorf("Duplicate tool name: %v\n", config.Name))
+			}
 			engine.tools = append(engine.tools, toolConfig)
 		} else {
 			color.Red("[!] Tool " + config.Name + " not found")
@@ -63,32 +75,50 @@ func NewEngine(home string) *Engine {
 }
 
 func (engine *Engine) Run() {
-	works := make(chan tools.Tool)
+	works := make(chan string)
 	results := make(chan tools.ToolResult)
 
 	go func() {
 		for _, tool := range engine.tools {
-			works <- tool
+			works <- tool.Name
 		}
 		close(works)
 	}()
 
 	var wg sync.WaitGroup
+	shared := []int{1, 2, 3}
 
 	for i := 0; i < engine.config.Parallelism; i++ {
 		wg.Add(1)
-		go func() {
+		go func(Engine *Engine) {
 			defer wg.Done()
 			for config := range works {
-				config.Run(results)
+				tool := engine.GetTool(config)
+				tool.Run(results)
+				shared[0] = 100
+
 			}
-		}()
+		}(engine)
 	}
 
 	go func() {
 		wg.Wait()
 		close(results)
 	}()
+
+	fmt.Printf("Engine is running %p", &engine)
+	go func(engine *Engine) {
+		for {
+			for _, tool := range engine.tools {
+				t := engine.GetTool(tool.Name)
+				fmt.Println("SHARED", shared)
+				fmt.Printf("(FROM GORUTINE) Tool %v is at addres %p\n", t.Name, t)
+				fmt.Printf("(FROM GORUTINE) Tool %v is running at address %p and values is %v \n", t.Name, &t.State.Running, t.State.Running)
+			}
+			time.Sleep(time.Millisecond * 100)
+		}
+
+	}(engine)
 
 	for res := range results {
 		fmt.Println(res)
