@@ -5,7 +5,7 @@
             "Name": "dummy1",
             "Config": {
                 "Available": true,
-                "Delay": 1,
+                "Delay": 5,
                 "NewLog": false
             }
         },
@@ -13,7 +13,7 @@
             "Name": "dummy2",
             "Config": {
                 "Available": true,
-                "Delay": 1,
+                "Delay": 7,
                 "NewLog": true
             }
         },
@@ -21,7 +21,7 @@
             "Name": "dummy3",
             "Config": {
                 "Available": true,
-                "Delay": 2,
+                "Delay": 4,
                 "NewLog": true
             }
         }

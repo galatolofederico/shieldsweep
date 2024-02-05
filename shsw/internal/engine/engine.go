@@ -5,6 +5,7 @@ import (
 	"os"
 	"path/filepath"
 	"sync"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
@@ -22,9 +23,11 @@ type EngineConfig struct {
 }
 
 type Engine struct {
-	home   string
-	tools  []tools.Tool
-	config EngineConfig
+	home      string
+	running   bool
+	startedAt string
+	tools     []tools.Tool
+	config    EngineConfig
 }
 
 func (engine *Engine) GetTool(name string) *tools.Tool {
@@ -73,13 +76,17 @@ func NewEngine(home string) *Engine {
 }
 
 func (engine *Engine) Run() []tools.ToolResult {
+	engine.running = true
+	engine.startedAt = time.Now().Format(time.RFC3339)
+
 	runResults := []tools.ToolResult{}
 	works := make(chan string)
 	results := make(chan tools.ToolResult)
 
 	go func() {
-		for _, tool := range engine.tools {
+		for i, tool := range engine.tools {
 			works <- tool.Name
+			engine.tools[i].State.Queued = true
 		}
 		close(works)
 	}()
@@ -102,30 +109,27 @@ func (engine *Engine) Run() []tools.ToolResult {
 		close(results)
 	}()
 
-	/*
-		go func() {
-			for {
-				for _, tool := range engine.tools {
-					t := engine.GetTool(tool.Name)
-					fmt.Printf("(FROM GORUTINE) Tool %v is running at address %p and values is %v \n", t.Name, &t.State.Running, t.State.Running)
-				}
-				time.Sleep(time.Millisecond * 100)
-			}
-
-		}()
-	*/
-
 	for res := range results {
 		runResults = append(runResults, res)
 	}
 
+	engine.startedAt = ""
+	engine.running = false
 	return runResults
 }
 
-func (engine *Engine) Status() []tools.ToolState {
+func (engine *Engine) GetToolStates() []tools.ToolState {
 	ret := []tools.ToolState{}
 	for _, tool := range engine.tools {
 		ret = append(ret, tool.State)
 	}
 	return ret
+}
+
+func (engine *Engine) IsRunning() bool {
+	return engine.running
+}
+
+func (engine *Engine) GetStartedAt() string {
+	return engine.startedAt
 }

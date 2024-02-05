@@ -13,6 +13,7 @@ type ToolState struct {
 	LastLogHash string
 	LastError   string
 	Running     bool
+	Queued      bool
 	Failed      bool
 }
 
@@ -64,6 +65,7 @@ func (config *Tool) Load() {
 			LastLogHash: "none",
 			LastError:   "",
 			Running:     false,
+			Queued:      false,
 			Failed:      false,
 		}
 		config.Save()

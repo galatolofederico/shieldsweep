@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 
 	"github.com/galatolofederico/shieldsweep/shsw/internal/engine"
+	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -20,12 +21,25 @@ func main() {
 	app := fiber.New()
 
 	app.Get("/run", func(c fiber.Ctx) error {
+		if engine.IsRunning() {
+			return c.JSON(messages.RunReply{
+				Started: false,
+				Message: "Already running",
+			})
+		}
 		go engine.Run()
-		return c.SendString("Ok")
+		return c.JSON(messages.RunReply{
+			Started: true,
+			Message: "Scan started",
+		})
 	})
 
 	app.Get("/status", func(c fiber.Ctx) error {
-		return c.JSON(engine.Status())
+		return c.JSON(messages.StatusReply{
+			Running:   engine.IsRunning(),
+			StartedAt: engine.GetStartedAt(),
+			Tools:     engine.GetToolStates(),
+		})
 	})
 
 	sock := filepath.Join(home, "shsw.sock")
