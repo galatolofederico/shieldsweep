@@ -1,31 +1,56 @@
 package engine
 
 import (
-	"fmt"
+	"encoding/json"
+	"os"
 	"path/filepath"
 
+	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
+	"github.com/pkg/errors"
 )
+
+type EngineConfig struct {
+	Tools []string
+}
 
 type Engine struct {
 	home         string
 	toolsConfigs []tools.ToolConfig
+	config       EngineConfig
 }
 
 func NewEngine(home string) *Engine {
-	return &Engine{home: home, toolsConfigs: []tools.ToolConfig{}}
-}
-
-func (engine *Engine) AddToolConfig(config tools.ToolConfig) {
-	if config.Runner.Check() {
-		config.LogFile = filepath.Join(engine.home, config.Name, "logs", "log.txt")
-		config.StateFile = filepath.Join(engine.home, config.Name, "state", "state.json")
-		config.Load()
-		engine.toolsConfigs = append(engine.toolsConfigs, config)
-		fmt.Println("Added tool " + config.Name)
-	} else {
-		fmt.Println("Tool " + config.Name + " not added")
+	config := EngineConfig{}
+	configFile := filepath.Join(home, "shsw.json")
+	data, err := os.ReadFile(configFile)
+	if err != nil {
+		panic(errors.Wrapf(err, "Error reading config file: %v\n", configFile))
 	}
+	err = json.Unmarshal(data, &config)
+	if err != nil {
+		panic(err)
+	}
+
+	engine := &Engine{home: home, toolsConfigs: []tools.ToolConfig{}, config: config}
+	for _, toolName := range config.Tools {
+		runner := tools.GetToolRunner(toolName)
+		if runner.Check() {
+			color.Green("[+] Tool " + toolName + " found")
+			toolConfig := tools.ToolConfig{
+				State:     tools.ToolState{LastRun: "never", LastLogHash: "none"},
+				Runner:    runner,
+				Name:      toolName,
+				LogFile:   filepath.Join(home, toolName, "logs", "log.txt"),
+				StateFile: filepath.Join(home, toolName, "state", "state.json"),
+			}
+			toolConfig.Load()
+			engine.toolsConfigs = append(engine.toolsConfigs, toolConfig)
+		} else {
+			color.Red("[!] Tool " + toolName + " not found")
+		}
+	}
+	return engine
 }
 
 func (engine *Engine) Run() {

@@ -1,21 +1,17 @@
 package main
 
 import (
+	"flag"
+
 	"github.com/galatolofederico/shieldsweep/shsw/internal/engine"
-	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
 )
 
+var home string
+
 func main() {
-	engine := engine.NewEngine("./tmp")
-	fake1 := tools.ToolConfig{
-		Runner: tools.NewFakeTool(true, 1),
-		Name:   "fake1",
-	}
-	fake2 := tools.ToolConfig{
-		Runner: tools.NewFakeTool(false, 2),
-		Name:   "fake2",
-	}
-	engine.AddToolConfig(fake1)
-	engine.AddToolConfig(fake2)
+	flag.StringVar(&home, "home", "/etc/shsw", "ShieldSweep home directory (where shsw.json is located)")
+	flag.Parse()
+
+	engine := engine.NewEngine(home)
 	engine.Run()
 }
