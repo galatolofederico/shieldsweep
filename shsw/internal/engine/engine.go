@@ -10,14 +10,19 @@ import (
 	"github.com/pkg/errors"
 )
 
+type EngineToolConfig struct {
+	Name   string
+	Config json.RawMessage
+}
+
 type EngineConfig struct {
-	Tools []string
+	Tools []EngineToolConfig
 }
 
 type Engine struct {
-	home         string
-	toolsConfigs []tools.ToolConfig
-	config       EngineConfig
+	home   string
+	tools  []tools.Tool
+	config EngineConfig
 }
 
 func NewEngine(home string) *Engine {
@@ -32,29 +37,29 @@ func NewEngine(home string) *Engine {
 		panic(err)
 	}
 
-	engine := &Engine{home: home, toolsConfigs: []tools.ToolConfig{}, config: config}
-	for _, toolName := range config.Tools {
-		runner := tools.GetToolRunner(toolName)
+	engine := &Engine{home: home, tools: []tools.Tool{}, config: config}
+	for _, config := range config.Tools {
+		runner := tools.GetToolRunner(config.Name, config.Config)
 		if runner.Check() {
-			color.Green("[+] Tool " + toolName + " found")
-			toolConfig := tools.ToolConfig{
+			color.Green("[+] Tool " + config.Name + " found")
+			toolConfig := tools.Tool{
 				State:     tools.ToolState{LastRun: "never", LastLogHash: "none"},
 				Runner:    runner,
-				Name:      toolName,
-				LogFile:   filepath.Join(home, toolName, "logs", "log.txt"),
-				StateFile: filepath.Join(home, toolName, "state", "state.json"),
+				Name:      config.Name,
+				LogFile:   filepath.Join(home, config.Name, "logs", "log.txt"),
+				StateFile: filepath.Join(home, config.Name, "state", "state.json"),
 			}
 			toolConfig.Load()
-			engine.toolsConfigs = append(engine.toolsConfigs, toolConfig)
+			engine.tools = append(engine.tools, toolConfig)
 		} else {
-			color.Red("[!] Tool " + toolName + " not found")
+			color.Red("[!] Tool " + config.Name + " not found")
 		}
 	}
 	return engine
 }
 
 func (engine *Engine) Run() {
-	for _, config := range engine.toolsConfigs {
+	for _, config := range engine.tools {
 		config.Run()
 	}
 }

@@ -18,10 +18,10 @@ type ToolState struct {
 
 type ToolRunner interface {
 	Check() bool
-	Run(config ToolConfig) error
+	Run(config Tool) error
 }
 
-type ToolConfig struct {
+type Tool struct {
 	State     ToolState
 	Runner    ToolRunner
 	Name      string
@@ -29,7 +29,7 @@ type ToolConfig struct {
 	StateFile string
 }
 
-func (config *ToolConfig) Run() {
+func (config *Tool) Run() {
 	utils.CheckPathForFile(config.LogFile)
 	config.State.LastRun = time.Now().String()
 	config.State.Running = true
@@ -45,7 +45,7 @@ func (config *ToolConfig) Run() {
 	config.Save()
 }
 
-func (config *ToolConfig) Load() {
+func (config *Tool) Load() {
 	utils.CheckPathForFile(config.StateFile)
 	if _, err := os.Stat(config.StateFile); os.IsNotExist(err) {
 		config.State = ToolState{
@@ -67,7 +67,7 @@ func (config *ToolConfig) Load() {
 	}
 }
 
-func (config *ToolConfig) Save() {
+func (config *Tool) Save() {
 	utils.CheckPathForFile(config.StateFile)
 	encoded, err := json.Marshal(config.State)
 	if err != nil {
