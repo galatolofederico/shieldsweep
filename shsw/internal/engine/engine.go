@@ -2,11 +2,9 @@ package engine
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
-	"time"
 
 	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
@@ -74,7 +72,8 @@ func NewEngine(home string) *Engine {
 	return engine
 }
 
-func (engine *Engine) Run() {
+func (engine *Engine) Run() []tools.ToolResult {
+	runResults := []tools.ToolResult{}
 	works := make(chan string)
 	results := make(chan tools.ToolResult)
 
@@ -86,19 +85,16 @@ func (engine *Engine) Run() {
 	}()
 
 	var wg sync.WaitGroup
-	shared := []int{1, 2, 3}
 
 	for i := 0; i < engine.config.Parallelism; i++ {
 		wg.Add(1)
-		go func(Engine *Engine) {
+		go func() {
 			defer wg.Done()
 			for config := range works {
 				tool := engine.GetTool(config)
 				tool.Run(results)
-				shared[0] = 100
-
 			}
-		}(engine)
+		}()
 	}
 
 	go func() {
@@ -106,21 +102,22 @@ func (engine *Engine) Run() {
 		close(results)
 	}()
 
-	fmt.Printf("Engine is running %p", &engine)
-	go func(engine *Engine) {
-		for {
-			for _, tool := range engine.tools {
-				t := engine.GetTool(tool.Name)
-				fmt.Println("SHARED", shared)
-				fmt.Printf("(FROM GORUTINE) Tool %v is at addres %p\n", t.Name, t)
-				fmt.Printf("(FROM GORUTINE) Tool %v is running at address %p and values is %v \n", t.Name, &t.State.Running, t.State.Running)
+	/*
+		go func() {
+			for {
+				for _, tool := range engine.tools {
+					t := engine.GetTool(tool.Name)
+					fmt.Printf("(FROM GORUTINE) Tool %v is running at address %p and values is %v \n", t.Name, &t.State.Running, t.State.Running)
+				}
+				time.Sleep(time.Millisecond * 100)
 			}
-			time.Sleep(time.Millisecond * 100)
-		}
 
-	}(engine)
+		}()
+	*/
 
 	for res := range results {
-		fmt.Println(res)
+		runResults = append(runResults, res)
 	}
+
+	return runResults
 }
