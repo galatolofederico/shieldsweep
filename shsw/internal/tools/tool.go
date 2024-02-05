@@ -26,6 +26,7 @@ type ToolConfig struct {
 }
 
 func (config *ToolConfig) Load() {
+	utils.CheckPathForFile(config.LogFile)
 	utils.CheckPathForFile(config.StateFile)
 	if _, err := os.Stat(config.StateFile); os.IsNotExist(err) {
 		config.State = ToolState{LastRun: "never", LastLogHash: "none"}
