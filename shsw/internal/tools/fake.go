@@ -5,26 +5,24 @@ import (
 	"time"
 )
 
-type FakeTool struct {
-	*DefaultTool
+type FakeToolRunner struct {
 	exists bool
 	sleep  int
 }
 
-func NewFakeTool(name string, exists bool, sleep int) *FakeTool {
-	return &FakeTool{
-		DefaultTool: &DefaultTool{name: name, logFile: "", stateFile: ""},
-		exists:      exists,
-		sleep:       sleep,
+func NewFakeTool(exists bool, sleep int) *FakeToolRunner {
+	return &FakeToolRunner{
+		exists: exists,
+		sleep:  sleep,
 	}
 }
 
-func (f FakeTool) Check() bool {
-	return f.exists
+func (runner *FakeToolRunner) Check() bool {
+	return runner.exists
 }
 
-func (f FakeTool) Run() {
-	fmt.Println("Running tool " + f.name)
-	time.Sleep(time.Duration(f.sleep) * time.Second)
-	fmt.Println("Tool " + f.name + " finished")
+func (runner *FakeToolRunner) Run(config ToolConfig) {
+	fmt.Println("Running tool " + config.Name)
+	time.Sleep(time.Duration(runner.sleep) * time.Second)
+	fmt.Println("Tool " + config.Name + " finished")
 }

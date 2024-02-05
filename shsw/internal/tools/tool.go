@@ -12,71 +12,43 @@ type ToolState struct {
 	LastLogHash string
 }
 
-type Tool interface {
-	SetLogFile(string)
-	GetLogFile() string
-	SetStateFile(string)
-	GetStateFile() string
-	GetName() string
-	Load()
-	Save()
+type ToolRunner interface {
 	Check() bool
-	Run()
+	Run(config ToolConfig)
 }
 
-type DefaultTool struct {
-	state     ToolState
-	name      string
-	logFile   string
-	stateFile string
+type ToolConfig struct {
+	State     ToolState
+	Runner    ToolRunner
+	Name      string
+	LogFile   string
+	StateFile string
 }
 
-func (t *DefaultTool) Load() {
-	utils.CheckPathForFile(t.stateFile)
-	if _, err := os.Stat(t.stateFile); os.IsNotExist(err) {
-		t.state = ToolState{LastRun: "never", LastLogHash: "none"}
-		t.Save()
+func (config *ToolConfig) Load() {
+	utils.CheckPathForFile(config.StateFile)
+	if _, err := os.Stat(config.StateFile); os.IsNotExist(err) {
+		config.State = ToolState{LastRun: "never", LastLogHash: "none"}
+		config.Save()
 	}
-	dat, err := os.ReadFile(t.stateFile)
+	dat, err := os.ReadFile(config.StateFile)
 	if err != nil {
 		panic(err)
 	}
-	err = json.Unmarshal(dat, &t.state)
-	if err != nil {
-		panic(err)
-	}
-}
-
-func (t *DefaultTool) Save() {
-	utils.CheckPathForFile(t.stateFile)
-	encoded, err := json.Marshal(t.state)
-	if err != nil {
-		panic(err)
-	}
-	err = os.WriteFile(t.stateFile, encoded, 0644)
+	err = json.Unmarshal(dat, &config.State)
 	if err != nil {
 		panic(err)
 	}
 }
 
-func (t *DefaultTool) GetName() string {
-	return t.name
-}
-
-func (t *DefaultTool) SetLogFile(file string) {
-	utils.CheckPathForFile(file)
-	t.logFile = file
-}
-
-func (t *DefaultTool) GetLogFile() string {
-	return t.logFile
-}
-
-func (t *DefaultTool) SetStateFile(file string) {
-	utils.CheckPathForFile(file)
-	t.stateFile = file
-}
-
-func (t *DefaultTool) GetStateFile() string {
-	return t.stateFile
+func (config *ToolConfig) Save() {
+	utils.CheckPathForFile(config.StateFile)
+	encoded, err := json.Marshal(config.State)
+	if err != nil {
+		panic(err)
+	}
+	err = os.WriteFile(config.StateFile, encoded, 0644)
+	if err != nil {
+		panic(err)
+	}
 }

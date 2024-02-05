@@ -8,28 +8,28 @@ import (
 )
 
 type Engine struct {
-	home  string
-	tools []tools.Tool
+	home         string
+	toolsConfigs []tools.ToolConfig
 }
 
 func NewEngine(home string) *Engine {
-	return &Engine{home: home, tools: []tools.Tool{}}
+	return &Engine{home: home, toolsConfigs: []tools.ToolConfig{}}
 }
 
-func (e *Engine) AddTool(t tools.Tool) {
-	if t.Check() {
-		t.SetLogFile(filepath.Join(e.home, t.GetName(), "logs", "log.txt"))
-		t.SetStateFile(filepath.Join(e.home, t.GetName(), "state", "state.json"))
-		t.Load()
-		e.tools = append(e.tools, t)
-		fmt.Println("Added tool " + t.GetName())
+func (engine *Engine) AddToolConfig(config tools.ToolConfig) {
+	if config.Runner.Check() {
+		config.LogFile = filepath.Join(engine.home, config.Name, "logs", "log.txt")
+		config.StateFile = filepath.Join(engine.home, config.Name, "state", "state.json")
+		config.Load()
+		engine.toolsConfigs = append(engine.toolsConfigs, config)
+		fmt.Println("Added tool " + config.Name)
 	} else {
-		fmt.Println("Tool " + t.GetName() + " not added")
+		fmt.Println("Tool " + config.Name + " not added")
 	}
 }
 
-func (e *Engine) Run() {
-	for _, t := range e.tools {
-		t.Run()
+func (engine *Engine) Run() {
+	for _, config := range engine.toolsConfigs {
+		config.Runner.Run(config)
 	}
 }
