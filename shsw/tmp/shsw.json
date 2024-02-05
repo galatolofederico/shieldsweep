@@ -1,0 +1,28 @@
+{
+    "Tools": [
+        {
+            "Name": "dummy1",
+            "Config": {
+                "Available": true,
+                "Delay": 1,
+                "NewLog": false
+            }
+        },
+        {
+            "Name": "dummy2",
+            "Config": {
+                "Available": true,
+                "Delay": 1,
+                "NewLog": true
+            }
+        },
+        {
+            "Name": "dummy3",
+            "Config": {
+                "Available": false,
+                "Delay": 0,
+                "NewLog": false
+            }
+        }
+    ]
+}
