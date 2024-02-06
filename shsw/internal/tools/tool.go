@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/galatolofederico/shieldsweep/shsw/internal/utils"
+	"github.com/pkg/errors"
 )
 
 const (
@@ -17,10 +18,11 @@ const (
 )
 
 type ToolState struct {
-	LastRun     string
-	LastLogHash string
-	LastError   string
-	State       string
+	LastRun       string
+	LastLogChange string
+	LastLogHash   string
+	LastError     string
+	State         string
 }
 
 type ToolRunner interface {
@@ -44,17 +46,32 @@ type ToolResult struct {
 
 func (tool *Tool) Run(ch chan<- ToolResult) {
 	result := ToolResult{Name: tool.Name, IsLogNew: false, Error: nil}
-	//TODO: implement log hash check
+
 	utils.CheckPathForFile(tool.LogFile)
 	tool.State.LastRun = time.Now().Format(time.RFC3339)
 	tool.State.State = Running
 	err := tool.Runner.Run(*tool)
+
+	newLogHash := "none"
+	if err == nil {
+		exists := utils.FileExists(tool.LogFile)
+		if exists {
+			newLogHash, err = utils.SHA256File(tool.LogFile)
+		} else {
+			err = errors.Errorf("Log file not found: %v", tool.LogFile)
+		}
+	}
 
 	if err != nil {
 		tool.State.LastError = err.Error()
 		tool.State.State = Failed
 		result.Error = err
 	} else {
+		if newLogHash != tool.State.LastLogHash {
+			tool.State.LastLogChange = time.Now().Format(time.RFC3339)
+			tool.State.LastLogHash = newLogHash
+			result.IsLogNew = true
+		}
 		tool.State.LastError = ""
 		tool.State.State = Finished
 	}
@@ -67,10 +84,11 @@ func (tool *Tool) Load() {
 	utils.CheckPathForFile(tool.StateFile)
 	if _, err := os.Stat(tool.StateFile); os.IsNotExist(err) {
 		tool.State = ToolState{
-			LastRun:     "never",
-			LastLogHash: "none",
-			LastError:   "",
-			State:       Ready,
+			LastRun:       "never",
+			LastLogChange: "never",
+			LastLogHash:   "none",
+			LastError:     "",
+			State:         Ready,
 		}
 		tool.Save()
 	}

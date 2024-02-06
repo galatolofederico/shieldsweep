@@ -133,10 +133,11 @@ func (engine *Engine) GetToolStates() []messages.ToolStateReply {
 	ret := []messages.ToolStateReply{}
 	for _, tool := range engine.tools {
 		ret = append(ret, messages.ToolStateReply{
-			Name:      tool.Name,
-			State:     tool.State.State,
-			LastRun:   tool.State.LastRun,
-			LastError: tool.State.LastError,
+			Name:          tool.Name,
+			State:         tool.State.State,
+			LastRun:       tool.State.LastRun,
+			LastLogChange: tool.State.LastLogChange,
+			LastError:     tool.State.LastError,
 		})
 	}
 	return ret

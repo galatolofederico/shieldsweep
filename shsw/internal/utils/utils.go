@@ -1,8 +1,11 @@
 package utils
 
 import (
+	"crypto/sha256"
+	"io"
 	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
@@ -27,7 +30,7 @@ func ValidateDirectory(dir string) (string, error) {
 	return dirPath, nil
 }
 
-func CheckPathForFile(file string) (string, error) {
+func CheckPathForFile(file string) string {
 	if file == "" {
 		panic("File path is empty")
 	}
@@ -40,5 +43,36 @@ func CheckPathForFile(file string) (string, error) {
 	if err != nil {
 		panic(err)
 	}
-	return path, nil
+	return path
+}
+
+func FileExists(filePath string) bool {
+	info, err := os.Stat(filePath)
+	if err == nil {
+		return !info.IsDir()
+	}
+	return false
+}
+
+func SHA256File(path string) (string, error) {
+	f, err := os.Open(path)
+	if err != nil {
+		return "", err
+	}
+	defer f.Close()
+
+	h := sha256.New()
+	if _, err := io.Copy(h, f); err != nil {
+		return "", err
+	}
+
+	return string(h.Sum(nil)), nil
+}
+
+func ParseDate(date string) string {
+	ret, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		return "date-parse-error"
+	}
+	return ret.Format("2006-01-02 15:04:05")
 }

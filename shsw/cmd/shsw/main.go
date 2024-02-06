@@ -10,10 +10,10 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"time"
 
 	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
+	"github.com/galatolofederico/shieldsweep/shsw/internal/utils"
 	"github.com/pkg/errors"
 )
 
@@ -69,27 +69,26 @@ func main() {
 		var response messages.StatusReply
 		json.Unmarshal(raw, &response)
 		if response.Running {
-			date, err := time.Parse(time.RFC3339, response.StartedAt)
-			if err != nil {
-				panic(err)
-			}
-			fdate := date.Format("2006-01-02 15:04:05")
+			fdate := utils.ParseDate(response.StartedAt)
 			color.White("[-] Scan running since " + fdate)
 		} else {
 			color.White("[-] SHSW is ready to scan")
 		}
 		for _, tool := range response.Tools {
+			lastRun := utils.ParseDate(tool.LastRun)
+			lastLogChange := utils.ParseDate(tool.LastLogChange)
+			toolInfo := fmt.Sprintf("(last run %s, last log change: %s)", lastRun, lastLogChange)
 			switch tool.State {
 			case "ready":
-				color.Green("[-] " + tool.Name + " ready")
+				color.Green("[-] " + tool.Name + " ready " + toolInfo)
 			case "running":
-				color.Green("[+] " + tool.Name + " running")
+				color.Green("[+] " + tool.Name + " running " + toolInfo)
 			case "failed":
-				color.Red("[-] " + tool.Name + " failed")
+				color.Red("[-] " + tool.Name + " failed " + toolInfo)
 			case "queued":
-				color.Yellow("[+] " + tool.Name + " queued")
+				color.Yellow("[+] " + tool.Name + " queued " + toolInfo)
 			case "finished":
-				color.Cyan("[+] " + tool.Name + " finished")
+				color.Cyan("[+] " + tool.Name + " finished " + toolInfo)
 			}
 		}
 	default:
