@@ -74,7 +74,19 @@ func main() {
 				panic(err)
 			}
 			fdate := date.Format("2006-01-02 15:04:05")
-			color.Yellow("[-] Scan running since " + fdate)
+			color.White("[-] Scan running since " + fdate)
+			for _, tool := range response.Tools {
+				switch tool.State {
+				case "ready":
+					color.Green("[-] " + tool.Name + " ready")
+				case "running":
+					color.Green("[+] " + tool.Name + " running")
+				case "failed":
+					color.Red("[-] " + tool.Name + " failed")
+				case "queued":
+					color.Yellow("[+] " + tool.Name + " queued")
+				}
+			}
 		} else {
 			color.Yellow("[-] Ready")
 		}

@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/fatih/color"
+	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
 	"github.com/pkg/errors"
 )
@@ -86,7 +87,7 @@ func (engine *Engine) Run() []tools.ToolResult {
 	go func() {
 		for i, tool := range engine.tools {
 			works <- tool.Name
-			engine.tools[i].State.Queued = true
+			engine.tools[i].State.State = tools.Queued
 		}
 		close(works)
 	}()
@@ -118,10 +119,15 @@ func (engine *Engine) Run() []tools.ToolResult {
 	return runResults
 }
 
-func (engine *Engine) GetToolStates() []tools.ToolState {
-	ret := []tools.ToolState{}
+func (engine *Engine) GetToolStates() []messages.ToolStateReply {
+	ret := []messages.ToolStateReply{}
 	for _, tool := range engine.tools {
-		ret = append(ret, tool.State)
+		ret = append(ret, messages.ToolStateReply{
+			Name:      tool.Name,
+			State:     tool.State.State,
+			LastRun:   tool.State.LastRun,
+			LastError: tool.State.LastError,
+		})
 	}
 	return ret
 }

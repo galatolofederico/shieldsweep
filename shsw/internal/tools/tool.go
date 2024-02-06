@@ -8,13 +8,18 @@ import (
 	"github.com/galatolofederico/shieldsweep/shsw/internal/utils"
 )
 
+const (
+	Ready   = "ready"
+	Running = "running"
+	Queued  = "queued"
+	Failed  = "failed"
+)
+
 type ToolState struct {
 	LastRun     string
 	LastLogHash string
 	LastError   string
-	Running     bool
-	Queued      bool
-	Failed      bool
+	State       string
 }
 
 type ToolRunner interface {
@@ -40,19 +45,19 @@ func (config *Tool) Run(ch chan<- ToolResult) {
 	result := ToolResult{Name: config.Name, IsLogNew: false, Error: nil}
 	//TODO: implement log hash check
 	utils.CheckPathForFile(config.LogFile)
-	config.State.LastRun = time.Now().String()
-	config.State.Running = true
+	config.State.LastRun = time.Now().Format(time.RFC3339)
+	config.State.State = Running
 	err := config.Runner.Run(*config)
+
 	if err != nil {
 		config.State.LastError = err.Error()
-		config.State.Failed = true
+		config.State.State = Failed
 		result.Error = err
-
 	} else {
 		config.State.LastError = ""
-		config.State.Failed = false
+		config.State.State = Ready
 	}
-	config.State.Running = false
+
 	config.Save()
 	ch <- result
 }
@@ -64,9 +69,7 @@ func (config *Tool) Load() {
 			LastRun:     "never",
 			LastLogHash: "none",
 			LastError:   "",
-			Running:     false,
-			Queued:      false,
-			Failed:      false,
+			State:       Ready,
 		}
 		config.Save()
 	}
