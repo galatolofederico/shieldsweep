@@ -75,20 +75,22 @@ func main() {
 			}
 			fdate := date.Format("2006-01-02 15:04:05")
 			color.White("[-] Scan running since " + fdate)
-			for _, tool := range response.Tools {
-				switch tool.State {
-				case "ready":
-					color.Green("[-] " + tool.Name + " ready")
-				case "running":
-					color.Green("[+] " + tool.Name + " running")
-				case "failed":
-					color.Red("[-] " + tool.Name + " failed")
-				case "queued":
-					color.Yellow("[+] " + tool.Name + " queued")
-				}
-			}
 		} else {
-			color.Yellow("[-] Ready")
+			color.White("[-] SHSW is ready to scan")
+		}
+		for _, tool := range response.Tools {
+			switch tool.State {
+			case "ready":
+				color.Green("[-] " + tool.Name + " ready")
+			case "running":
+				color.Green("[+] " + tool.Name + " running")
+			case "failed":
+				color.Red("[-] " + tool.Name + " failed")
+			case "queued":
+				color.Yellow("[+] " + tool.Name + " queued")
+			case "finished":
+				color.Cyan("[+] " + tool.Name + " finished")
+			}
 		}
 	default:
 		fmt.Println("Usage: shsw [run|status]")

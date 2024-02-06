@@ -84,10 +84,13 @@ func (engine *Engine) Run() []tools.ToolResult {
 	works := make(chan string)
 	results := make(chan tools.ToolResult)
 
+	for i := range engine.tools {
+		engine.tools[i].State.State = tools.Queued
+	}
+
 	go func() {
-		for i, tool := range engine.tools {
+		for _, tool := range engine.tools {
 			works <- tool.Name
-			engine.tools[i].State.State = tools.Queued
 		}
 		close(works)
 	}()
@@ -116,6 +119,13 @@ func (engine *Engine) Run() []tools.ToolResult {
 
 	engine.startedAt = ""
 	engine.running = false
+
+	for i := range engine.tools {
+		if engine.tools[i].State.State != tools.Failed {
+			engine.tools[i].State.State = tools.Ready
+		}
+	}
+
 	return runResults
 }
 

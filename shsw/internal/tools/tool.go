@@ -9,10 +9,11 @@ import (
 )
 
 const (
-	Ready   = "ready"
-	Running = "running"
-	Queued  = "queued"
-	Failed  = "failed"
+	Ready    = "ready"
+	Running  = "running"
+	Queued   = "queued"
+	Finished = "finished"
+	Failed   = "failed"
 )
 
 type ToolState struct {
@@ -55,7 +56,7 @@ func (tool *Tool) Run(ch chan<- ToolResult) {
 		result.Error = err
 	} else {
 		tool.State.LastError = ""
-		tool.State.State = Ready
+		tool.State.State = Finished
 	}
 
 	tool.Save()
