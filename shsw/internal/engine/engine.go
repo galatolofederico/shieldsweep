@@ -123,6 +123,7 @@ func (engine *Engine) Run() []tools.ToolResult {
 	for i := range engine.tools {
 		if engine.tools[i].State.State != tools.Failed {
 			engine.tools[i].State.State = tools.Ready
+			engine.tools[i].Save()
 		}
 	}
 

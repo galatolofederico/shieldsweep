@@ -75,9 +75,9 @@ func main() {
 			color.White("[-] SHSW is ready to scan")
 		}
 		for _, tool := range response.Tools {
-			lastRun := utils.ParseDate(tool.LastRun)
-			lastLogChange := utils.ParseDate(tool.LastLogChange)
-			toolInfo := fmt.Sprintf("(last run %s, last log change: %s)", lastRun, lastLogChange)
+			lastRun := utils.DaysAgo(tool.LastRun)
+			lastLogChange := utils.DaysAgo(tool.LastLogChange)
+			toolInfo := fmt.Sprintf("(last run: %s, last log change: %s)", lastRun, lastLogChange)
 			switch tool.State {
 			case "ready":
 				color.Green("[-] " + tool.Name + " ready " + toolInfo)

@@ -102,6 +102,7 @@ func (tool *Tool) Load() {
 	}
 }
 
+// TODO: se non riesce a salvare il file di stato deve davvero panicare?
 func (tool *Tool) Save() {
 	utils.CheckPathForFile(tool.StateFile)
 	encoded, err := json.Marshal(tool.State)

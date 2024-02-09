@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/sha256"
+	"fmt"
 	"io"
 	"os"
 	"path/filepath"
@@ -75,4 +76,20 @@ func ParseDate(date string) string {
 		return "date-parse-error"
 	}
 	return ret.Format("2006-01-02 15:04:05")
+}
+
+func DaysAgo(date string) string {
+	now := time.Now()
+	prev, err := time.Parse(time.RFC3339, date)
+	if err != nil {
+		return "date-parse-error"
+	}
+	diff := now.Sub(prev)
+	hours := diff.Hours()
+	if hours < 24 {
+		return fmt.Sprintf("%v hours ago", int(hours))
+	} else {
+		days := int(hours / 24)
+		return fmt.Sprintf("%v days and %v hours ago", days, int(hours)%24)
+	}
 }
