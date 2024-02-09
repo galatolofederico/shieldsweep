@@ -2,6 +2,7 @@ package utils
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"fmt"
 	"io"
 	"os"
@@ -67,7 +68,8 @@ func SHA256File(path string) (string, error) {
 		return "", err
 	}
 
-	return string(h.Sum(nil)), nil
+	sha := h.Sum(nil)
+	return hex.EncodeToString(sha), nil
 }
 
 func ParseDate(date string) string {
