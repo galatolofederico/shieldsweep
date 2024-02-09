@@ -18,3 +18,9 @@ type StatusReply struct {
 	StartedAt string
 	Tools     []ToolStateReply
 }
+
+type LogReply struct {
+	Tool          string
+	LastLogChange string
+	Log           string
+}

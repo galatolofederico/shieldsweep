@@ -91,7 +91,20 @@ func main() {
 				color.Cyan("[+] " + tool.Name + " finished " + toolInfo)
 			}
 		}
+	case "log":
+		if len(command) < 2 {
+			fmt.Println("Usage: shsw log <tool>")
+			os.Exit(1)
+		}
+		tool := command[1]
+		raw := get(httpc, "http://unix/log/"+tool)
+		var response messages.LogReply
+		json.Unmarshal(raw, &response)
+		lastLogChange := utils.DaysAgo(response.LastLogChange)
+		color.Green("[!] Log for " + response.Tool)
+		color.Green("[!] Last log change: " + lastLogChange)
+		fmt.Println(response.Log)
 	default:
-		fmt.Println("Usage: shsw [run|status]")
+		fmt.Println("Usage: shsw [run|status|log]")
 	}
 }

@@ -18,7 +18,10 @@ func main() {
 	flag.Parse()
 
 	engine := engine.NewEngine(home)
-	app := fiber.New()
+	app := fiber.New(fiber.Config{
+		ServerHeader: "shsw-daemon",
+		AppName:      "shsw-daemon",
+	})
 
 	app.Get("/run", func(c fiber.Ctx) error {
 		if engine.IsRunning() {
@@ -39,6 +42,20 @@ func main() {
 			Running:   engine.IsRunning(),
 			StartedAt: engine.GetStartedAt(),
 			Tools:     engine.GetToolStates(),
+		})
+	})
+
+	app.Get("/log/:tool", func(c fiber.Ctx) error {
+		toolname := c.Params("tool")
+		tool := engine.GetTool(toolname)
+		if tool == nil {
+			//return 404 with message as plain text
+			return c.Status(404).SendString("Tool not found")
+		}
+		return c.JSON(messages.LogReply{
+			Tool:          tool.Name,
+			LastLogChange: tool.State.LastLogChange,
+			Log:           tool.GetLog(),
 		})
 	})
 

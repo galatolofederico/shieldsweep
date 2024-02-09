@@ -114,3 +114,12 @@ func (tool *Tool) Save() {
 		panic(err)
 	}
 }
+
+func (tool *Tool) GetLog() string {
+	utils.CheckPathForFile(tool.LogFile)
+	dat, err := os.ReadFile(tool.LogFile)
+	if err != nil {
+		return "Log file not found"
+	}
+	return string(dat)
+}
