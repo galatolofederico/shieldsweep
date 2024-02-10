@@ -106,15 +106,15 @@ func main() {
 	engine.AddFunc("stateToClass", func(state string) string {
 		switch state {
 		case "ready":
-			return "table-primary"
+			return "primary"
 		case "running":
-			return "table-success"
+			return "success"
 		case "queued":
-			return "table-warning"
+			return "warning"
 		case "failed":
-			return "table-danger"
+			return "danger"
 		case "finished":
-			return "table-info"
+			return "info"
 		default:
 			return ""
 		}
