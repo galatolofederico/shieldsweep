@@ -41,6 +41,7 @@ type Tool struct {
 	Runner      ToolRunner
 	Name        string
 	LogFile     string
+	OldLogFile  string
 	TempLogFile string
 	StateFile   string
 }
@@ -56,6 +57,12 @@ func (tool *Tool) Run(ch chan<- ToolResult) {
 
 	utils.CheckPathForFile(tool.LogFile)
 	utils.CheckPathForFile(tool.TempLogFile)
+	utils.CheckPathForFile(tool.OldLogFile)
+
+	if utils.FileExists(tool.LogFile) {
+		utils.CopyFile(tool.LogFile, tool.OldLogFile)
+	}
+
 	tool.State.LastRun = time.Now().Format(time.RFC3339)
 	tool.State.State = Running
 	err := tool.Runner.Run(*tool)

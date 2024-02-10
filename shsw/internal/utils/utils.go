@@ -61,6 +61,17 @@ func FileExists(filePath string) bool {
 	return false
 }
 
+func CopyFile(src string, dst string) {
+	data, err := os.ReadFile(src)
+	if err != nil {
+		panic(errors.Wrapf(err, "Error reading file: %v\n", src))
+	}
+	err = os.WriteFile(dst, data, 0644)
+	if err != nil {
+		panic(errors.Wrapf(err, "Error writing file: %v\n", dst))
+	}
+}
+
 func SHA256File(path string) (string, error) {
 	f, err := os.Open(path)
 	if err != nil {

@@ -71,6 +71,7 @@ func NewEngine(home string) *Engine {
 				Runner:      runner,
 				Name:        config.Name,
 				LogFile:     filepath.Join(home, config.Name, "logs", "log.txt"),
+				OldLogFile:  filepath.Join(home, config.Name, "logs", "old.txt"),
 				TempLogFile: filepath.Join(home, config.Name, "logs", "tmp.txt"),
 				StateFile:   filepath.Join(home, config.Name, "state", "state.json"),
 			}
