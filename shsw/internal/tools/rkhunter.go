@@ -1,6 +1,7 @@
 package tools
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 
@@ -28,6 +29,7 @@ func (runner *RKHunterRunner) Check() bool {
 }
 
 func (runner *RKHunterRunner) Run(tool Tool) error {
+	fmt.Println(runner.config.Path, "-sk", "-l", tool.LogFile)
 	cmd := exec.Command(
 		runner.config.Path,
 		"-sk",

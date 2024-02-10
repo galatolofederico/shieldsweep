@@ -4,6 +4,9 @@
         {
             "type": "command",
             "config": {
+                "shell": "/bin/sh -c",
+                "uid": 1000,
+                "gid": 1000,
                 "command": "notify-send -t 0 -u critical 'Security Alert' 'Shieldsweep detected new logs'"
             }
         }
@@ -18,7 +21,7 @@
             "enabled": true,
             "config": {
                 "available": true,
-                "delay": 10,
+                "delay": 2,
                 "newLog": false
             }
         },
@@ -27,7 +30,7 @@
             "enabled": true,
             "config": {
                 "available": true,
-                "delay": 7,
+                "delay": 2,
                 "newLog": true
             }
         },
@@ -36,7 +39,7 @@
             "enabled": true,
             "config": {
                 "available": true,
-                "delay": 7,
+                "delay": 2,
                 "newLog": true
             }
         }
