@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"os/user"
 	"path/filepath"
 	"time"
 
@@ -81,6 +82,9 @@ func ParseDate(date string) string {
 }
 
 func DaysAgo(date string) string {
+	if date == "never" {
+		return "never"
+	}
 	now := time.Now()
 	prev, err := time.Parse(time.RFC3339, date)
 	if err != nil {
@@ -94,4 +98,12 @@ func DaysAgo(date string) string {
 		days := int(hours / 24)
 		return fmt.Sprintf("%v days and %v hours ago", days, int(hours)%24)
 	}
+}
+
+func IsRoot() bool {
+	currentUser, err := user.Current()
+	if err != nil {
+		panic(errors.Wrap(err, "Error getting current user"))
+	}
+	return currentUser.Username == "root"
 }

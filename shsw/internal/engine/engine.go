@@ -2,6 +2,7 @@ package engine
 
 import (
 	"encoding/json"
+	"fmt"
 	"os"
 	"path/filepath"
 	"sync"
@@ -52,6 +53,7 @@ func NewEngine(home string) *Engine {
 	if err != nil {
 		panic(err)
 	}
+	color.Green(fmt.Sprintf("[+] Parallelism level: %v\n", config.Parallelism))
 
 	engine := &Engine{home: home, tools: []tools.Tool{}, config: config}
 	for _, config := range config.Tools {

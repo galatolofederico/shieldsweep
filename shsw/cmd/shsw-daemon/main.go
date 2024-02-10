@@ -8,6 +8,7 @@ import (
 
 	"github.com/galatolofederico/shieldsweep/shsw/internal/engine"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
+	"github.com/galatolofederico/shieldsweep/shsw/internal/utils"
 	"github.com/gofiber/fiber/v3"
 )
 
@@ -16,6 +17,10 @@ func main() {
 
 	flag.StringVar(&home, "home", "/etc/shsw", "ShieldSweep home directory (where shsw.json is located)")
 	flag.Parse()
+
+	if !utils.IsRoot() {
+		panic("shsw daemon must be run as root")
+	}
 
 	engine := engine.NewEngine(home)
 	app := fiber.New(fiber.Config{
@@ -67,6 +72,10 @@ func main() {
 		}
 	}
 	ln, err := net.Listen("unix", sock)
+	if err != nil {
+		panic(err)
+	}
+	err = os.Chmod(sock, 0766)
 	if err != nil {
 		panic(err)
 	}

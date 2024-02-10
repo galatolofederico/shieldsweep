@@ -18,6 +18,15 @@ func GetToolRunner(toolName string, config json.RawMessage) ToolRunner {
 			panic(err)
 		}
 		return NewDummyTool(dummyConfig)
+	case "rkhunter":
+		var rkhunterConfig RKHunterConfig
+		if config != nil {
+			err := json.Unmarshal(config, &rkhunterConfig)
+			if err != nil {
+				panic(err)
+			}
+		}
+		return NewRKHunter(rkhunterConfig)
 	default:
 		panic(errors.Errorf("Tool %v not found", toolName))
 	}

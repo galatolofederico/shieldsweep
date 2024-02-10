@@ -1,31 +1,35 @@
 {
-    "Parallelism": 2,
-    "Tools": [
+    "parallelism": 2,
+    "tools": [
         {
-            "Name": "dummy1",
-            "Enabled": true,
-            "Config": {
-                "Available": true,
-                "Delay": 10,
-                "NewLog": false
+            "name": "rkhunter",
+            "enabled": true
+        },
+        {
+            "name": "dummy1",
+            "enabled": true,
+            "config": {
+                "available": true,
+                "delay": 10,
+                "newLog": false
             }
         },
         {
-            "Name": "dummy2",
-            "Enabled": true,
-            "Config": {
-                "Available": true,
-                "Delay": 7,
-                "NewLog": true
+            "name": "dummy2",
+            "enabled": true,
+            "config": {
+                "available": true,
+                "delay": 7,
+                "newLog": true
             }
         },
         {
-            "Name": "dummy3",
-            "Enabled": true,
-            "Config": {
-                "Available": true,
-                "Delay": 7,
-                "NewLog": true
+            "name": "dummy3",
+            "enabled": true,
+            "config": {
+                "available": true,
+                "delay": 7,
+                "newLog": true
             }
         }
     ]
