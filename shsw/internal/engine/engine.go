@@ -10,10 +10,12 @@ import (
 
 	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
+	"github.com/galatolofederico/shieldsweep/shsw/internal/notifications"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
 	"github.com/pkg/errors"
 )
 
+// TODO: spostare EngineConfig in tools.go e rinominare in ToolConfig
 type EngineToolConfig struct {
 	Name    string
 	Enabled bool
@@ -21,16 +23,18 @@ type EngineToolConfig struct {
 }
 
 type EngineConfig struct {
-	Parallelism int
-	Tools       []EngineToolConfig
+	Parallelism   int
+	Notifications []notifications.NotificationConfig
+	Tools         []EngineToolConfig
 }
 
 type Engine struct {
-	home      string
-	running   bool
-	startedAt string
-	tools     []tools.Tool
-	config    EngineConfig
+	home          string
+	running       bool
+	startedAt     string
+	tools         []tools.Tool
+	notifications []notifications.Notification
+	config        EngineConfig
 }
 
 func (engine *Engine) GetTool(name string) *tools.Tool {
@@ -55,7 +59,12 @@ func NewEngine(home string) *Engine {
 	}
 	color.Green(fmt.Sprintf("[+] Parallelism level: %v\n", config.Parallelism))
 
-	engine := &Engine{home: home, tools: []tools.Tool{}, config: config}
+	engine := &Engine{
+		home:          home,
+		tools:         []tools.Tool{},
+		notifications: []notifications.Notification{},
+		config:        config,
+	}
 	for _, config := range config.Tools {
 		if !config.Enabled {
 			color.Yellow("[!] Tool " + config.Name + " disabled")
@@ -80,6 +89,15 @@ func NewEngine(home string) *Engine {
 			color.Red("[!] Tool " + config.Name + " not found")
 		}
 	}
+	for _, config := range config.Notifications {
+		runner := notifications.GetNotificationRunner(config.Type, config.Config)
+		color.Green("[+] Notification '" + config.Type + "' loaded")
+		notificationConfig := notifications.Notification{
+			Runner: runner,
+		}
+		engine.notifications = append(engine.notifications, notificationConfig)
+	}
+
 	if len(engine.tools) == 0 {
 		panic(errors.New("No tools available"))
 	}
@@ -134,6 +152,20 @@ func (engine *Engine) Run() []tools.ToolResult {
 		if engine.tools[i].State.State != tools.Failed {
 			engine.tools[i].State.State = tools.Ready
 			engine.tools[i].Save()
+		}
+	}
+
+	shouldNotify := false
+	for _, result := range runResults {
+		if result.IsLogNew {
+			shouldNotify = true
+			break
+		}
+	}
+
+	if shouldNotify {
+		for _, notification := range engine.notifications {
+			notification.Notify(runResults)
 		}
 	}
 

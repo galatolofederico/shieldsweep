@@ -27,12 +27,12 @@ func (runner *RKHunterRunner) Check() bool {
 	return !os.IsNotExist(err)
 }
 
-func (runner *RKHunterRunner) Run(config Tool) error {
+func (runner *RKHunterRunner) Run(tool Tool) error {
 	cmd := exec.Command(
 		runner.config.Path,
 		"-sk",
 		"-l",
-		config.LogFile,
+		tool.LogFile,
 	)
 	output, err := cmd.Output()
 	if err != nil {

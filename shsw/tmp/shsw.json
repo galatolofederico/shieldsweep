@@ -1,5 +1,13 @@
 {
     "parallelism": 2,
+    "notifications": [
+        {
+            "type": "command",
+            "config": {
+                "command": "notify-send -t 0 -u critical 'Security Alert' 'Shieldsweep detected new logs'"
+            }
+        }
+    ],
     "tools": [
         {
             "name": "rkhunter",
