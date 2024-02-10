@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tool Details - {{.Name}}</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-3">
+        <h1>Details for {{.Name}}</h1>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th scope="col">Attribute</th>
+                    <th scope="col">Value</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Last Run</td>
+                    <td>{{.LastRun}}</td>
+                </tr>
+                <tr>
+                    <td>Last Log Update</td>
+                    <td>{{.LastLogChange}}</td>
+                </tr>
+            </tbody>
+        </table>
+        <h2>Logs</h2>
+        <pre>{{.Logs}}</pre>
+        <h2>Errors</h2>
+        <pre>{{.Errors}}</pre>
+    </div>
+</body>
+</html>

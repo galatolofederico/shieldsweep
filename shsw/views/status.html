@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShieldSweep Status</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-3">
+        <h1>ShieldSweep Dashboard</h1>
+        <form action="/start-scan" method="post">
+            <button type="submit" class="btn btn-primary" {{if .Running}}disabled{{end}}>Start Scan</button>
+        </form>
+        <table class="table mt-3">
+            <thead>
+                <tr>
+                    <th scope="col">Tool</th>
+                    <th scope="col">Status</th>
+                    <th scope="col">Last Run</th>
+                    <th scope="col">Last Log Update</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range .ToolsStatus}}
+                <tr onclick="window.location='/tool/{{.Name}}';" style="cursor:pointer;" class="{{.State | stateToClass}}">
+                    <td>{{.Name}}</td>
+                    <td>{{.State}}</td>
+                    <td>{{.LastRun}}</td>
+                    <td>{{.LastLogChange}}</td>
+                </tr>
+                {{end}}
+            </tbody>            
+        </table>
+    </div>
+</body>
+</html>
