@@ -14,8 +14,9 @@ import (
 )
 
 type EngineToolConfig struct {
-	Name   string
-	Config json.RawMessage
+	Name    string
+	Enabled bool
+	Config  json.RawMessage
 }
 
 type EngineConfig struct {
@@ -54,6 +55,10 @@ func NewEngine(home string) *Engine {
 
 	engine := &Engine{home: home, tools: []tools.Tool{}, config: config}
 	for _, config := range config.Tools {
+		if !config.Enabled {
+			color.Yellow("[!] Tool " + config.Name + " disabled")
+			continue
+		}
 		runner := tools.GetToolRunner(config.Name, config.Config)
 		if runner.Check() {
 			color.Green("[+] Tool " + config.Name + " found")
@@ -72,6 +77,9 @@ func NewEngine(home string) *Engine {
 		} else {
 			color.Red("[!] Tool " + config.Name + " not found")
 		}
+	}
+	if len(engine.tools) == 0 {
+		panic(errors.New("No tools available"))
 	}
 	return engine
 }

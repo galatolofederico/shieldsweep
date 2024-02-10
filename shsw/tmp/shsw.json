@@ -3,6 +3,7 @@
     "Tools": [
         {
             "Name": "dummy1",
+            "Enabled": true,
             "Config": {
                 "Available": true,
                 "Delay": 10,
@@ -11,6 +12,7 @@
         },
         {
             "Name": "dummy2",
+            "Enabled": true,
             "Config": {
                 "Available": true,
                 "Delay": 7,
@@ -19,6 +21,7 @@
         },
         {
             "Name": "dummy3",
+            "Enabled": true,
             "Config": {
                 "Available": true,
                 "Delay": 7,
