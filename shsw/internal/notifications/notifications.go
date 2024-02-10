@@ -16,6 +16,7 @@ type NotificationRunner interface {
 }
 
 type Notification struct {
+	Type   string
 	Runner NotificationRunner
 }
 

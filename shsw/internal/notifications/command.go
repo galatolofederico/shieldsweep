@@ -1,7 +1,7 @@
 package notifications
 
 import (
-	"fmt"
+	"os/exec"
 
 	"github.com/galatolofederico/shieldsweep/shsw/internal/tools"
 )
@@ -19,6 +19,7 @@ func NewCommandRunner(config CommandConfig) *CommandRunner {
 }
 
 func (runner *CommandRunner) Notify(results []tools.ToolResult) error {
-	fmt.Println("Notifying with command: " + runner.config.Command)
-	return nil
+	cmd := exec.Command(runner.config.Command)
+	err := cmd.Run()
+	return err
 }

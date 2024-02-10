@@ -30,6 +30,12 @@ type ToolRunner interface {
 	Run(config Tool) error
 }
 
+type ToolConfig struct {
+	Name    string
+	Enabled bool
+	Config  json.RawMessage
+}
+
 type Tool struct {
 	State     ToolState
 	Runner    ToolRunner

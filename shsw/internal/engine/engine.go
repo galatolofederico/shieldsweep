@@ -15,17 +15,10 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: spostare EngineConfig in tools.go e rinominare in ToolConfig
-type EngineToolConfig struct {
-	Name    string
-	Enabled bool
-	Config  json.RawMessage
-}
-
 type EngineConfig struct {
 	Parallelism   int
 	Notifications []notifications.NotificationConfig
-	Tools         []EngineToolConfig
+	Tools         []tools.ToolConfig
 }
 
 type Engine struct {
@@ -93,6 +86,7 @@ func NewEngine(home string) *Engine {
 		runner := notifications.GetNotificationRunner(config.Type, config.Config)
 		color.Green("[+] Notification '" + config.Type + "' loaded")
 		notificationConfig := notifications.Notification{
+			Type:   config.Type,
 			Runner: runner,
 		}
 		engine.notifications = append(engine.notifications, notificationConfig)
@@ -165,6 +159,7 @@ func (engine *Engine) Run() []tools.ToolResult {
 
 	if shouldNotify {
 		for _, notification := range engine.notifications {
+			color.Green("[+] Notifying with " + notification.Type)
 			notification.Notify(runResults)
 		}
 	}
