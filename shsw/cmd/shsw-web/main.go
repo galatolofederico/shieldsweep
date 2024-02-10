@@ -46,8 +46,8 @@ func statusHandler(c *fiber.Ctx) error {
 		statusData.ToolsStatus[i] = ToolStatus{
 			Name:          tool.Name,
 			State:         tool.State,
-			LastRun:       tool.LastRun,
-			LastLogChange: tool.LastLogChange,
+			LastRun:       utils.DaysAgo(tool.LastRun),
+			LastLogChange: utils.DaysAgo(tool.LastLogChange),
 		}
 	}
 
@@ -79,8 +79,9 @@ func toolDetailHandler(c *fiber.Ctx) error {
 
 	return c.Render("tool_detail", fiber.Map{
 		"Name":          toolName,
-		"LastRun":       response.LastRun,
-		"LastLogChange": response.LastLogChange,
+		"State":         response.State,
+		"LastRun":       utils.DaysAgo(response.LastRun),
+		"LastLogChange": utils.DaysAgo(response.LastLogChange),
 		"Logs":          response.Log,
 		"Errors":        response.LastError,
 	}, "tool_detail")

@@ -8,10 +8,16 @@
 </head>
 <body>
     <div class="container mt-3">
-        <h1>ShieldSweep</h1>
-        <form action="/start-scan" method="post">
-            <button type="submit" class="btn btn-primary" {{if .Running}}disabled{{end}}>Start Scan</button>
-        </form>
+        <h1 class="text-center">ShieldSweep</h1>
+        <div class="text-center mt-4">
+            <h4>System Status:</h4>
+            {{if .Running}}
+            <span class="badge badge-primary">Running</span>
+            {{else}}
+            <span class="badge badge-success">Ready</span>
+            {{end}}
+        </div>
+
         <table class="table mt-3">
             <thead>
                 <tr>
@@ -32,6 +38,13 @@
                 {{end}}
             </tbody>            
         </table>
+
+        <div class="text-center mt-4">
+            <form action="/start-scan" method="post">
+                <button type="submit" class="btn btn-lg btn-primary" {{if .Running}}disabled{{end}}>Start Scan</button>
+            </form>
+        </div>
+
     </div>
 </body>
 </html>

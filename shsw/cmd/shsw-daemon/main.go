@@ -58,6 +58,7 @@ func main() {
 		}
 		return c.JSON(messages.LogReply{
 			Tool:          tool.Name,
+			State:         tool.State.State,
 			LastLogChange: tool.State.LastLogChange,
 			LastRun:       tool.State.LastRun,
 			Log:           tool.GetLog(),

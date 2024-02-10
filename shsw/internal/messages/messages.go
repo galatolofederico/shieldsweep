@@ -21,6 +21,7 @@ type StatusReply struct {
 
 type LogReply struct {
 	Tool          string
+	State         string
 	LastLogChange string
 	LastRun       string
 	Log           string
