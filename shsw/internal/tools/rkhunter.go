@@ -27,25 +27,21 @@ func (runner *RKHunterRunner) Check() bool {
 	return !os.IsNotExist(err)
 }
 
-// TODO: create a temp file and use it as log file
-// then check if the temp file has content
-// if not means that there was an error
-// rkhunter returns 1 if there is a warning but the scan is successful
-// than remove from the logfile the lines containing dates and system info like kernel version
-// finally save the content of the temp file in the actual log file
 func (runner *RKHunterRunner) Run(tool Tool) error {
+	if _, err := os.Stat(tool.TempLogFile); !os.IsNotExist(err) {
+		os.Remove(tool.TempLogFile)
+	}
 	cmd := exec.Command(
 		runner.config.Path,
 		"-c",
 		"--sk",
 		"--nocolors",
-		"-l",
+		"--logfile",
 		tool.TempLogFile,
 	)
-	output, err := cmd.Output()
-	if err != nil {
-		return errors.Wrapf(err, "Error running rkhunter: %v\n", string(output))
-	} else {
-		return nil
+	output, _ := cmd.Output()
+	if _, err := os.Stat(tool.TempLogFile); os.IsNotExist(err) {
+		return errors.Errorf("%v", output)
 	}
+	return os.WriteFile(tool.LogFile, output, 0644)
 }
