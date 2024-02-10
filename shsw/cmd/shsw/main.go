@@ -23,7 +23,8 @@ func get(httpc http.Client, path string) []byte {
 		panic(err)
 	}
 	if response.StatusCode != http.StatusOK {
-		panic(errors.Errorf("Error: %s\n", response.Status))
+		resBody, _ := io.ReadAll(response.Body)
+		panic(errors.Errorf("Error: %s\n%s", response.Status, resBody))
 	}
 	resBody, err := io.ReadAll(response.Body)
 	if err != nil {
@@ -103,7 +104,11 @@ func main() {
 		lastLogChange := utils.DaysAgo(response.LastLogChange)
 		color.Green("[!] Log for " + response.Tool)
 		color.Green("[!] Last log change: " + lastLogChange)
-		fmt.Println(response.Log)
+		color.White(response.Log)
+		if response.LastError != "" {
+			color.Red("[!] Error log found")
+			color.Red(response.LastError)
+		}
 	default:
 		fmt.Println("Usage: shsw [run|status|log]")
 	}

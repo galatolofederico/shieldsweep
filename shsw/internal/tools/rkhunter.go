@@ -3,6 +3,8 @@ package tools
 import (
 	"os"
 	"os/exec"
+
+	"github.com/pkg/errors"
 )
 
 type RKHunterConfig struct {
@@ -32,9 +34,9 @@ func (runner *RKHunterRunner) Run(config Tool) error {
 		"-l",
 		config.LogFile,
 	)
-	_, err := cmd.Output()
+	output, err := cmd.Output()
 	if err != nil {
-		return err
+		return errors.Wrapf(err, "Error running rkhunter: %v\n", string(output))
 	} else {
 		return nil
 	}

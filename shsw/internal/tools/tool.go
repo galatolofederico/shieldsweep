@@ -123,3 +123,7 @@ func (tool *Tool) GetLog() string {
 	}
 	return string(dat)
 }
+
+func (tool *Tool) GetLastError() string {
+	return tool.State.LastError
+}

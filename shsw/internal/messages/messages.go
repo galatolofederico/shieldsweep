@@ -23,4 +23,5 @@ type LogReply struct {
 	Tool          string
 	LastLogChange string
 	Log           string
+	LastError     string
 }

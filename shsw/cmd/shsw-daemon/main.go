@@ -54,13 +54,13 @@ func main() {
 		toolname := c.Params("tool")
 		tool := engine.GetTool(toolname)
 		if tool == nil {
-			//return 404 with message as plain text
 			return c.Status(404).SendString("Tool not found")
 		}
 		return c.JSON(messages.LogReply{
 			Tool:          tool.Name,
 			LastLogChange: tool.State.LastLogChange,
 			Log:           tool.GetLog(),
+			LastError:     tool.GetLastError(),
 		})
 	})
 
