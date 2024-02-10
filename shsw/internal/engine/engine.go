@@ -67,11 +67,12 @@ func NewEngine(home string) *Engine {
 		if runner.Check() {
 			color.Green("[+] Tool " + config.Name + " found")
 			toolConfig := tools.Tool{
-				State:     tools.ToolState{LastRun: "never", LastLogHash: "none"},
-				Runner:    runner,
-				Name:      config.Name,
-				LogFile:   filepath.Join(home, config.Name, "logs", "log.txt"),
-				StateFile: filepath.Join(home, config.Name, "state", "state.json"),
+				State:       tools.ToolState{LastRun: "never", LastLogHash: "none"},
+				Runner:      runner,
+				Name:        config.Name,
+				LogFile:     filepath.Join(home, config.Name, "logs", "log.txt"),
+				TempLogFile: filepath.Join(home, config.Name, "logs", "tmp.txt"),
+				StateFile:   filepath.Join(home, config.Name, "state", "state.json"),
 			}
 			toolConfig.Load()
 			if engine.GetTool(config.Name) != nil {

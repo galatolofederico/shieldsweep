@@ -37,11 +37,12 @@ type ToolConfig struct {
 }
 
 type Tool struct {
-	State     ToolState
-	Runner    ToolRunner
-	Name      string
-	LogFile   string
-	StateFile string
+	State       ToolState
+	Runner      ToolRunner
+	Name        string
+	LogFile     string
+	TempLogFile string
+	StateFile   string
 }
 
 type ToolResult struct {
@@ -54,6 +55,7 @@ func (tool *Tool) Run(ch chan<- ToolResult) {
 	result := ToolResult{Name: tool.Name, IsLogNew: false, Error: nil}
 
 	utils.CheckPathForFile(tool.LogFile)
+	utils.CheckPathForFile(tool.TempLogFile)
 	tool.State.LastRun = time.Now().Format(time.RFC3339)
 	tool.State.State = Running
 	err := tool.Runner.Run(*tool)
@@ -122,8 +124,12 @@ func (tool *Tool) Save() {
 }
 
 func (tool *Tool) GetLog() string {
-	utils.CheckPathForFile(tool.LogFile)
-	dat, err := os.ReadFile(tool.LogFile)
+	logFile := tool.LogFile
+	if tool.State.State == Running {
+		logFile = tool.TempLogFile
+	}
+	utils.CheckPathForFile(logFile)
+	dat, err := os.ReadFile(logFile)
 	if err != nil {
 		return "Log file not found"
 	}

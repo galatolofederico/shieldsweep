@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 
@@ -27,15 +26,21 @@ func (runner *RKHunterRunner) Check() bool {
 	_, err := os.Stat(runner.config.Path)
 	return !os.IsNotExist(err)
 }
+
+// TODO: create a temp file and use it as log file
+// then check if the temp file has content
+// if not means that there was an error
+// rkhunter returns 1 if there is a warning but the scan is successful
+// than remove from the logfile the lines containing dates and system info like kernel version
+// finally save the content of the temp file in the actual log file
 func (runner *RKHunterRunner) Run(tool Tool) error {
-	fmt.Println(runner.config.Path, "-sk", "-l", tool.LogFile)
 	cmd := exec.Command(
 		runner.config.Path,
 		"-c",
 		"--sk",
 		"--nocolors",
 		"-l",
-		tool.LogFile,
+		tool.TempLogFile,
 	)
 	output, err := cmd.Output()
 	if err != nil {
