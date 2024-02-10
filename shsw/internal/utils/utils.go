@@ -1,15 +1,19 @@
 package utils
 
 import (
+	"context"
 	"crypto/sha256"
 	"encoding/hex"
 	"fmt"
 	"io"
+	"net"
+	"net/http"
 	"os"
 	"os/user"
 	"path/filepath"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 )
@@ -106,4 +110,32 @@ func IsRoot() bool {
 		panic(errors.Wrap(err, "Error getting current user"))
 	}
 	return currentUser.Username == "root"
+}
+
+func Get(httpc http.Client, path string) []byte {
+	response, err := httpc.Get(path)
+	if err != nil {
+		color.Red("[!] Error: %v\n", err)
+		color.Red("[!] Is the daemon running?\n")
+		os.Exit(1)
+	}
+	if response.StatusCode != http.StatusOK {
+		resBody, _ := io.ReadAll(response.Body)
+		panic(errors.Errorf("Error: %s\n%s", response.Status, resBody))
+	}
+	resBody, err := io.ReadAll(response.Body)
+	if err != nil {
+		panic(errors.Wrapf(err, "Error reading response body from %s\n", path))
+	}
+	return resBody
+}
+
+func GetUnixClient(sock string) http.Client {
+	return http.Client{
+		Transport: &http.Transport{
+			DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
+				return net.Dial("unix", sock)
+			},
+		},
+	}
 }

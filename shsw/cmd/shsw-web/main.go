@@ -1,20 +1,17 @@
 package main
 
 import (
-	"context"
 	"encoding/json"
 	"flag"
-	"fmt"
-	"io"
-	"net"
 	"net/http"
 	"os"
 	"path/filepath"
 
+	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
+	"github.com/galatolofederico/shieldsweep/shsw/internal/utils"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/template/html/v2"
-	"github.com/pkg/errors"
 )
 
 type ToolStatus struct {
@@ -30,38 +27,10 @@ type StatusPageData struct {
 	ToolsStatus []ToolStatus
 }
 
-var sock string
-
-func get(httpc http.Client, path string) []byte {
-	response, err := httpc.Get(path)
-	if err != nil {
-		panic(err)
-	}
-	if response.StatusCode != http.StatusOK {
-		resBody, _ := io.ReadAll(response.Body)
-		panic(fmt.Errorf("Error: %s\n%s", response.Status, resBody))
-	}
-	resBody, err := io.ReadAll(response.Body)
-	if err != nil {
-		panic(fmt.Errorf("Error reading response body from %s\n", path))
-	}
-	return resBody
-}
-
-func getHTTPClient() http.Client {
-	return http.Client{
-		Transport: &http.Transport{
-			DialContext: func(_ context.Context, _, _ string) (net.Conn, error) {
-				return net.Dial("unix", sock)
-			},
-		},
-	}
-}
+var httpc http.Client
 
 func statusHandler(c *fiber.Ctx) error {
-	httpc := getHTTPClient()
-
-	raw := get(httpc, "http://unix/status")
+	raw := utils.Get(httpc, "http://unix/status")
 	var response messages.StatusReply
 	if err := json.Unmarshal(raw, &response); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error parsing status response")
@@ -90,9 +59,7 @@ func statusHandler(c *fiber.Ctx) error {
 }
 
 func startScanHandler(c *fiber.Ctx) error {
-	httpc := getHTTPClient()
-
-	raw := get(httpc, "http://unix/run")
+	raw := utils.Get(httpc, "http://unix/run")
 	var response messages.RunReply
 	if err := json.Unmarshal(raw, &response); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error parsing run response")
@@ -104,9 +71,7 @@ func startScanHandler(c *fiber.Ctx) error {
 
 func toolDetailHandler(c *fiber.Ctx) error {
 	toolName := c.Params("toolName")
-	httpc := getHTTPClient()
-
-	raw := get(httpc, "http://unix/log/"+toolName)
+	raw := utils.Get(httpc, "http://unix/log/"+toolName)
 	var response messages.LogReply
 	if err := json.Unmarshal(raw, &response); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error parsing log response")
@@ -127,11 +92,13 @@ func main() {
 	flag.StringVar(&home, "home", "/etc/shsw", "ShieldSweep home directory (where shsw.json is located)")
 	flag.Parse()
 
-	sock = filepath.Join(home, "shsw.sock")
+	sock := filepath.Join(home, "shsw.sock")
 	_, err := os.Stat(sock)
 	if err != nil {
-		panic(errors.Wrapf(err, "Error checking for socket file: %v\n", sock))
+		color.Red("[!] Error: %v\n", err)
+		color.Red("[!] Is the daemon running?\n")
 	}
+	httpc = utils.GetUnixClient(sock)
 
 	engine := html.New("./views", ".html")
 
