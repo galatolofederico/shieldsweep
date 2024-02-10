@@ -27,12 +27,13 @@ func (runner *RKHunterRunner) Check() bool {
 	_, err := os.Stat(runner.config.Path)
 	return !os.IsNotExist(err)
 }
-
 func (runner *RKHunterRunner) Run(tool Tool) error {
 	fmt.Println(runner.config.Path, "-sk", "-l", tool.LogFile)
 	cmd := exec.Command(
 		runner.config.Path,
-		"-sk",
+		"-c",
+		"--sk",
+		"--nocolors",
 		"-l",
 		tool.LogFile,
 	)
