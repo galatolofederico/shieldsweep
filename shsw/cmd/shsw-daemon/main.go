@@ -9,7 +9,7 @@ import (
 	"github.com/galatolofederico/shieldsweep/shsw/internal/engine"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/utils"
-	"github.com/gofiber/fiber/v3"
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
@@ -28,7 +28,7 @@ func main() {
 		AppName:      "shsw-daemon",
 	})
 
-	app.Get("/run", func(c fiber.Ctx) error {
+	app.Get("/run", func(c *fiber.Ctx) error {
 		if engine.IsRunning() {
 			return c.JSON(messages.RunReply{
 				Started: false,
@@ -42,7 +42,7 @@ func main() {
 		})
 	})
 
-	app.Get("/status", func(c fiber.Ctx) error {
+	app.Get("/status", func(c *fiber.Ctx) error {
 		return c.JSON(messages.StatusReply{
 			Running:   engine.IsRunning(),
 			StartedAt: engine.GetStartedAt(),
@@ -50,7 +50,7 @@ func main() {
 		})
 	})
 
-	app.Get("/log/:tool", func(c fiber.Ctx) error {
+	app.Get("/log/:tool", func(c *fiber.Ctx) error {
 		toolname := c.Params("tool")
 		tool := engine.GetTool(toolname)
 		if tool == nil {
