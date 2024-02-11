@@ -1,0 +1,26 @@
+{
+    "parallelism": 2,
+    "notifications": [
+        {
+            "type": "command",
+            "config": {
+                "shell": "/bin/sh",
+                "command": "wall \"New logs available in Shieldsweep\""
+            }
+        }
+    ],
+    "tools": [
+        {
+            "name": "rkhunter",
+            "enabled": true
+        },
+        {
+            "name": "chkrootkit",
+            "enabled": true
+        },
+        {
+            "name": "lynis",
+            "enabled": true
+        }
+    ]
+}
