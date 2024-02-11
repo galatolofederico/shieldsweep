@@ -4,7 +4,7 @@
         {
             "type": "command",
             "config": {
-                "shell": "/bin/sh -c",
+                "shell": "/bin/sh",
                 "uid": 1000,
                 "gid": 1000,
                 "command": "telegram-notify --config /home/federico/.config/telegram-notify.conf --text \"Shieldsweep found something\" --warning"
@@ -31,7 +31,7 @@
         },
         {
             "name": "dummy2",
-            "enabled": true,
+            "enabled": false,
             "config": {
                 "available": true,
                 "delay": 2,
@@ -40,7 +40,7 @@
         },
         {
             "name": "dummy3",
-            "enabled": true,
+            "enabled": false,
             "config": {
                 "available": true,
                 "delay": 2,
