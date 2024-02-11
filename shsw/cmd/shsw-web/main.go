@@ -1,6 +1,7 @@
 package main
 
 import (
+	"embed"
 	"encoding/json"
 	"flag"
 	"net/http"
@@ -51,11 +52,11 @@ func statusHandler(c *fiber.Ctx) error {
 		}
 	}
 
-	return c.Render("status", fiber.Map{
+	return c.Render("views/status", fiber.Map{
 		"Running":     statusData.Running,
 		"StartedAt":   statusData.StartedAt,
 		"ToolsStatus": statusData.ToolsStatus,
-	}, "status")
+	}, "views/status")
 }
 
 func startScanHandler(c *fiber.Ctx) error {
@@ -77,15 +78,18 @@ func toolDetailHandler(c *fiber.Ctx) error {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error parsing log response")
 	}
 
-	return c.Render("tool_detail", fiber.Map{
+	return c.Render("views/tool_detail", fiber.Map{
 		"Name":          toolName,
 		"State":         response.State,
 		"LastRun":       utils.DaysAgo(response.LastRun),
 		"LastLogChange": utils.DaysAgo(response.LastLogChange),
 		"Logs":          response.Log,
 		"Errors":        response.LastError,
-	}, "tool_detail")
+	}, "views/tool_detail")
 }
+
+//go:embed views/*
+var embedDirStatic embed.FS
 
 func main() {
 	var home string
@@ -101,7 +105,7 @@ func main() {
 	}
 	httpc = utils.GetUnixClient(sock)
 
-	engine := html.New("./views", ".html")
+	engine := html.NewFileSystem(http.FS(embedDirStatic), ".html")
 
 	engine.AddFunc("stateToClass", func(state string) string {
 		switch state {
