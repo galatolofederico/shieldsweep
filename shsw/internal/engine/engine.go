@@ -101,6 +101,7 @@ func NewEngine(home string) *Engine {
 }
 
 func (engine *Engine) Run() []tools.ToolResult {
+	color.Green("[!] Running scan")
 	engine.running = true
 	engine.startedAt = time.Now().Format(time.RFC3339)
 
@@ -166,6 +167,7 @@ func (engine *Engine) Run() []tools.ToolResult {
 		}
 	}
 
+	color.Green("[!] Scan finished")
 	return runResults
 }
 

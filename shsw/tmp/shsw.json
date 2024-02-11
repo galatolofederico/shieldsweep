@@ -21,6 +21,10 @@
             "enabled": true
         },
         {
+            "name": "lynis",
+            "enabled": true
+        },
+        {
             "name": "dummy1",
             "enabled": true,
             "config": {

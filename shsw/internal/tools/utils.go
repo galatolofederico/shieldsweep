@@ -11,13 +11,6 @@ func GetToolRunner(toolName string, config json.RawMessage) ToolRunner {
 	// name-[0-9] so that one can use the same tool with different configurations
 	// but with different names (name must be unique)
 	switch toolName {
-	case "dummy1", "dummy2", "dummy3":
-		var dummyConfig DummyToolConfig
-		err := json.Unmarshal(config, &dummyConfig)
-		if err != nil {
-			panic(err)
-		}
-		return NewDummyTool(dummyConfig)
 	case "rkhunter":
 		var rkhunterConfig RKHunterConfig
 		if config != nil {
@@ -36,6 +29,22 @@ func GetToolRunner(toolName string, config json.RawMessage) ToolRunner {
 			}
 		}
 		return NewChkRootkit(chkrootkitConfig)
+	case "lynis":
+		var lynisConfig LynisConfig
+		if config != nil {
+			err := json.Unmarshal(config, &lynisConfig)
+			if err != nil {
+				panic(err)
+			}
+		}
+		return NewLynis(lynisConfig)
+	case "dummy1", "dummy2", "dummy3":
+		var dummyConfig DummyToolConfig
+		err := json.Unmarshal(config, &dummyConfig)
+		if err != nil {
+			panic(err)
+		}
+		return NewDummyTool(dummyConfig)
 	default:
 		panic(errors.Errorf("Tool %v not found", toolName))
 	}
