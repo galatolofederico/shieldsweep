@@ -7,13 +7,17 @@
                 "shell": "/bin/sh -c",
                 "uid": 1000,
                 "gid": 1000,
-                "command": "notify-send -t 0 -u critical 'Security Alert' 'Shieldsweep detected new logs'"
+                "command": "telegram-notify --config /home/federico/.config/telegram-notify.conf --text \"Shieldsweep found something\" --warning"
             }
         }
     ],
     "tools": [
         {
             "name": "rkhunter",
+            "enabled": false
+        },
+        {
+            "name": "chkrootkit",
             "enabled": true
         },
         {

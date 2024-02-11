@@ -27,6 +27,15 @@ func GetToolRunner(toolName string, config json.RawMessage) ToolRunner {
 			}
 		}
 		return NewRKHunter(rkhunterConfig)
+	case "chkrootkit":
+		var chkrootkitConfig ChkRootkitConfig
+		if config != nil {
+			err := json.Unmarshal(config, &chkrootkitConfig)
+			if err != nil {
+				panic(err)
+			}
+		}
+		return NewChkRootkit(chkrootkitConfig)
 	default:
 		panic(errors.Errorf("Tool %v not found", toolName))
 	}
