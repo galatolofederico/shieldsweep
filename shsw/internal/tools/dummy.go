@@ -29,13 +29,13 @@ func (runner *DummyToolRunner) Run(tool Tool) error {
 	time.Sleep(time.Duration(runner.config.Delay) * time.Second)
 	var log string
 	if runner.config.NewLog {
-		fmt.Println("Tool " + tool.Name + " is writing something new to log " + tool.LogFile)
+		fmt.Println("Tool " + tool.Name + " is writing something new to log " + tool.CurrentLogFile)
 		log = "Success " + time.Now().String()
 	} else {
-		fmt.Println("Tool " + tool.Name + " is writing the same thing to log " + tool.LogFile)
+		fmt.Println("Tool " + tool.Name + " is writing the same thing to log " + tool.CurrentLogFile)
 		log = "Nothing New"
 	}
-	err := os.WriteFile(tool.LogFile, []byte(log), 0644)
+	err := os.WriteFile(tool.CurrentLogFile, []byte(log), 0644)
 	if err != nil {
 		panic(err)
 	}

@@ -19,7 +19,7 @@
         },
         {
             "name": "chkrootkit",
-            "enabled": true
+            "enabled": false
         },
         {
             "name": "lynis",
@@ -27,7 +27,7 @@
         },
         {
             "name": "dummy1",
-            "enabled": false,
+            "enabled": true,
             "config": {
                 "available": true,
                 "delay": 2,
@@ -45,7 +45,7 @@
         },
         {
             "name": "dummy3",
-            "enabled": false,
+            "enabled": true,
             "config": {
                 "available": true,
                 "delay": 2,

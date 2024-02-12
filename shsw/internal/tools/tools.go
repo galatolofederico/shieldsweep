@@ -3,6 +3,9 @@ package tools
 import (
 	"encoding/json"
 	"os"
+	"path/filepath"
+	"sort"
+	"strings"
 	"time"
 
 	"github.com/galatolofederico/shieldsweep/shsw/internal/utils"
@@ -37,13 +40,12 @@ type ToolConfig struct {
 }
 
 type Tool struct {
-	State       ToolState
-	Runner      ToolRunner
-	Name        string
-	LogFile     string
-	OldLogFile  string
-	TempLogFile string
-	StateFile   string
+	State          ToolState
+	Runner         ToolRunner
+	Name           string
+	LogsPath       string
+	CurrentLogFile string
+	StateFile      string
 }
 
 type ToolResult struct {
@@ -53,27 +55,23 @@ type ToolResult struct {
 }
 
 func (tool *Tool) Run(ch chan<- ToolResult) {
+	now := time.Now()
 	result := ToolResult{Name: tool.Name, IsLogNew: false, Error: nil}
+	tool.CurrentLogFile = filepath.Join(tool.LogsPath, now.Format("2006-01-02 15:04:05")+".txt")
 
-	utils.CheckPathForFile(tool.LogFile)
-	utils.CheckPathForFile(tool.TempLogFile)
-	utils.CheckPathForFile(tool.OldLogFile)
+	utils.CheckPathForFile(tool.CurrentLogFile)
 
-	if utils.FileExists(tool.LogFile) {
-		utils.CopyFile(tool.LogFile, tool.OldLogFile)
-	}
-
-	tool.State.LastRun = time.Now().Format(time.RFC3339)
+	tool.State.LastRun = now.Format(time.RFC3339)
 	tool.State.State = Running
 	err := tool.Runner.Run(*tool)
 
 	newLogHash := "none"
 	if err == nil {
-		exists := utils.FileExists(tool.LogFile)
+		exists := utils.FileExists(tool.CurrentLogFile)
 		if exists {
-			newLogHash, err = utils.SHA256File(tool.LogFile)
+			newLogHash, err = utils.SHA256File(tool.CurrentLogFile)
 		} else {
-			err = errors.Errorf("Log file not found: %v", tool.LogFile)
+			err = errors.Errorf("Log file not found: %v", tool.CurrentLogFile)
 		}
 	}
 
@@ -131,16 +129,43 @@ func (tool *Tool) Save() {
 }
 
 func (tool *Tool) GetLog() string {
-	logFile := tool.LogFile
-	if tool.State.State == Running {
-		logFile = tool.TempLogFile
-	}
-	utils.CheckPathForFile(logFile)
-	dat, err := os.ReadFile(logFile)
+	utils.CheckPathForFile(tool.CurrentLogFile)
+	dat, err := os.ReadFile(tool.CurrentLogFile)
 	if err != nil {
 		return "Log file not found"
 	}
 	return string(dat)
+}
+
+func (tool *Tool) GetLatestLog() string {
+	files, err := os.ReadDir(tool.LogsPath)
+	if err != nil {
+		return "Error reading log files"
+	}
+
+	var dates []time.Time
+	for _, file := range files {
+		if !file.IsDir() {
+			filename := file.Name()
+			dateStr := strings.TrimSuffix(filename, filepath.Ext(filename))
+			date, err := time.Parse("2006-01-02 15:04:05", dateStr)
+			if err == nil {
+				dates = append(dates, date)
+			}
+		}
+	}
+
+	sort.Slice(dates, func(i, j int) bool {
+		return dates[i].After(dates[j])
+	})
+
+	if len(dates) > 0 {
+		latestDate := dates[0]
+		latestDateStr := latestDate.Format("2006-01-02 15:04:05")
+		return filepath.Join(tool.LogsPath, latestDateStr+".log")
+	}
+
+	return ""
 }
 
 func (tool *Tool) GetLastError() string {

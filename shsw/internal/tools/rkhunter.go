@@ -35,8 +35,8 @@ func (runner *RKHunterRunner) Check() bool {
 }
 
 func (runner *RKHunterRunner) Run(tool Tool) error {
-	if _, err := os.Stat(tool.TempLogFile); !os.IsNotExist(err) {
-		os.Remove(tool.TempLogFile)
+	if _, err := os.Stat(tool.CurrentLogFile); !os.IsNotExist(err) {
+		os.Remove(tool.CurrentLogFile)
 	}
 	cmd := exec.Command(
 		runner.config.Path,
@@ -44,12 +44,12 @@ func (runner *RKHunterRunner) Run(tool Tool) error {
 		"--sk",
 		"--nocolors",
 		"--logfile",
-		tool.TempLogFile,
+		tool.CurrentLogFile,
 	)
 	output, _ := cmd.Output()
-	if _, err := os.Stat(tool.TempLogFile); os.IsNotExist(err) {
+	if _, err := os.Stat(tool.CurrentLogFile); os.IsNotExist(err) {
 		return errors.Errorf("%v", output)
 	}
 	output = []byte(sanitizeRKHunterLog(string(output)))
-	return os.WriteFile(tool.LogFile, output, 0644)
+	return os.WriteFile(tool.CurrentLogFile, output, 0644)
 }

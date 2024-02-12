@@ -67,15 +67,18 @@ func NewEngine(home string) *Engine {
 		if runner.Check() {
 			color.Green("[+] Tool " + config.Name + " found")
 			toolConfig := tools.Tool{
-				State:       tools.ToolState{LastRun: "never", LastLogHash: "none"},
-				Runner:      runner,
-				Name:        config.Name,
-				LogFile:     filepath.Join(home, config.Name, "logs", "log.txt"),
-				OldLogFile:  filepath.Join(home, config.Name, "logs", "old.txt"),
-				TempLogFile: filepath.Join(home, config.Name, "logs", "tmp.txt"),
-				StateFile:   filepath.Join(home, config.Name, "state", "state.json"),
+				State:          tools.ToolState{LastRun: "never", LastLogHash: "none"},
+				Runner:         runner,
+				Name:           config.Name,
+				LogsPath:       filepath.Join(home, config.Name, "logs"),
+				CurrentLogFile: "",
+				StateFile:      filepath.Join(home, config.Name, "state", "state.json"),
 			}
 			toolConfig.Load()
+			toolConfig.CurrentLogFile = toolConfig.GetLatestLog()
+			if toolConfig.CurrentLogFile == "" {
+				toolConfig.CurrentLogFile = filepath.Join(home, config.Name, "state", "tmp.log")
+			}
 			if engine.GetTool(config.Name) != nil {
 				panic(errors.Errorf("Duplicate tool name: %v\n", config.Name))
 			}

@@ -37,11 +37,11 @@ func (runner *ChkRootkitRunner) Check() bool {
 }
 
 func (runner *ChkRootkitRunner) Run(tool Tool) error {
-	if _, err := os.Stat(tool.TempLogFile); !os.IsNotExist(err) {
-		os.Remove(tool.TempLogFile)
+	if _, err := os.Stat(tool.CurrentLogFile); !os.IsNotExist(err) {
+		os.Remove(tool.CurrentLogFile)
 	}
 
-	logFile, err := os.OpenFile(tool.TempLogFile, os.O_CREATE|os.O_WRONLY, 0644)
+	logFile, err := os.OpenFile(tool.CurrentLogFile, os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		return errors.Wrap(err, "error creating temp log file")
 	}
@@ -57,10 +57,10 @@ func (runner *ChkRootkitRunner) Run(tool Tool) error {
 	if err != nil {
 		return errors.Wrap(err, "error running chkrootkit")
 	}
-	output, err := os.ReadFile(tool.TempLogFile)
+	output, err := os.ReadFile(tool.CurrentLogFile)
 	if err != nil {
 		return errors.Wrap(err, "error reading temp log file")
 	}
 	output = []byte(sanitizeChkRootkitLog(string(output)))
-	return os.WriteFile(tool.LogFile, output, 0644)
+	return os.WriteFile(tool.CurrentLogFile, output, 0644)
 }
