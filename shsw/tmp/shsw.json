@@ -4,10 +4,11 @@
         {
             "type": "command",
             "config": {
-                "shell": "/bin/sh",
-                "uid": 1000,
-                "gid": 1000,
-                "command": "telegram-notify --config /home/federico/.config/telegram-notify.conf --text \"Shieldsweep found something\" --warning"
+                "command": [
+                    "/bin/sh",
+                    "-c",
+                    "wall \"New logs available in Shieldsweep\""
+                ]
             }
         }
     ],
@@ -22,11 +23,11 @@
         },
         {
             "name": "lynis",
-            "enabled": true
+            "enabled": false
         },
         {
             "name": "dummy1",
-            "enabled": true,
+            "enabled": false,
             "config": {
                 "available": true,
                 "delay": 2,
@@ -35,7 +36,7 @@
         },
         {
             "name": "dummy2",
-            "enabled": false,
+            "enabled": true,
             "config": {
                 "available": true,
                 "delay": 2,

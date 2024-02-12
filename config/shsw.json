@@ -4,8 +4,11 @@
         {
             "type": "command",
             "config": {
-                "shell": "/bin/sh",
-                "command": "wall \"New logs available in Shieldsweep\""
+                "command": [
+                    "/bin/sh",
+                    "-c",
+                    "wall \"New logs available in Shieldsweep\""
+                ]
             }
         }
     ],
