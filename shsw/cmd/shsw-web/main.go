@@ -12,6 +12,7 @@ import (
 	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/utils"
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/filesystem"
 	"github.com/gofiber/template/html/v2"
 )
 
@@ -89,7 +90,10 @@ func toolDetailHandler(c *fiber.Ctx) error {
 }
 
 //go:embed views/*
-var embedDirStatic embed.FS
+var embedDirViews embed.FS
+
+//go:embed assets/*
+var embedDirAssets embed.FS
 
 func main() {
 	var home string
@@ -106,7 +110,7 @@ func main() {
 	httpc = utils.GetUnixClient(sock)
 	utils.Get(httpc, "http://unix/health")
 
-	engine := html.NewFileSystem(http.FS(embedDirStatic), ".html")
+	engine := html.NewFileSystem(http.FS(embedDirViews), ".html")
 
 	engine.AddFunc("stateToClass", func(state string) string {
 		switch state {
@@ -135,5 +139,10 @@ func main() {
 	app.Post("/start-scan", startScanHandler)
 	app.Get("/tool/:toolName", toolDetailHandler)
 
+	app.Use("/assets", filesystem.New(filesystem.Config{
+		Root:       http.FS(embedDirAssets),
+		PathPrefix: "assets",
+		Browse:     true,
+	}))
 	app.Listen(":3000")
 }
