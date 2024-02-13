@@ -21,11 +21,11 @@ const (
 )
 
 type ToolState struct {
-	LastRun       string
-	LastLogChange string
-	LastLogHash   string
-	LastError     string
-	State         string
+	LatestRun       string
+	LatestLogChange string
+	LatestLogHash   string
+	LatestError     string
+	State           string
 }
 
 type ToolRunner interface {
@@ -61,7 +61,7 @@ func (tool *Tool) Run(ch chan<- ToolResult) {
 
 	utils.CheckPathForFile(tool.CurrentLogFile)
 
-	tool.State.LastRun = now.Format(time.RFC3339)
+	tool.State.LatestRun = now.Format(time.RFC3339)
 	tool.State.State = Running
 	err := tool.Runner.Run(*tool)
 
@@ -76,16 +76,16 @@ func (tool *Tool) Run(ch chan<- ToolResult) {
 	}
 
 	if err != nil {
-		tool.State.LastError = err.Error()
+		tool.State.LatestError = err.Error()
 		tool.State.State = Failed
 		result.Error = err
 	} else {
-		if newLogHash != tool.State.LastLogHash {
-			tool.State.LastLogChange = time.Now().Format(time.RFC3339)
-			tool.State.LastLogHash = newLogHash
+		if newLogHash != tool.State.LatestLogHash {
+			tool.State.LatestLogChange = time.Now().Format(time.RFC3339)
+			tool.State.LatestLogHash = newLogHash
 			result.IsLogNew = true
 		}
-		tool.State.LastError = ""
+		tool.State.LatestError = ""
 		tool.State.State = Finished
 	}
 
@@ -97,11 +97,11 @@ func (tool *Tool) Load() {
 	utils.CheckPathForFile(tool.StateFile)
 	if _, err := os.Stat(tool.StateFile); os.IsNotExist(err) {
 		tool.State = ToolState{
-			LastRun:       "never",
-			LastLogChange: "never",
-			LastLogHash:   "none",
-			LastError:     "",
-			State:         Ready,
+			LatestRun:       "never",
+			LatestLogChange: "never",
+			LatestLogHash:   "none",
+			LatestError:     "",
+			State:           Ready,
 		}
 		tool.Save()
 	}
@@ -172,6 +172,6 @@ func (tool *Tool) GetLatestLog() string {
 	return tool.GetLogById(0)
 }
 
-func (tool *Tool) GetLastError() string {
-	return tool.State.LastError
+func (tool *Tool) GetLatestError() string {
+	return tool.State.LatestError
 }

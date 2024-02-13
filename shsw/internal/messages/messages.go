@@ -6,11 +6,11 @@ type RunReply struct {
 }
 
 type ToolStateReply struct {
-	Name          string
-	State         string
-	LastRun       string
-	LastLogChange string
-	LastError     string
+	Name            string
+	State           string
+	LatestRun       string
+	LatestLogChange string
+	LatestError     string
 }
 
 type StatusReply struct {
@@ -20,17 +20,17 @@ type StatusReply struct {
 }
 
 type LogsReply struct {
-	Tool          string
-	LastLogChange string
-	LastRun       string
-	Logs          []string
+	Tool            string
+	LatestLogChange string
+	LatestRun       string
+	Logs            []string
 }
 
 type LogReply struct {
-	Tool          string
-	State         string
-	LastLogChange string
-	LastRun       string
-	Log           string
-	LastError     string
+	Tool            string
+	State           string
+	LatestLogChange string
+	LatestRun       string
+	Log             string
+	LatestError     string
 }

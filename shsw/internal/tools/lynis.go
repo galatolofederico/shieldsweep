@@ -21,7 +21,7 @@ func sanitizeLynisLog(log string) string {
 	lynisRegex := regexp.MustCompile(`Lynis .*`)
 	programVersionRegex := regexp.MustCompile(`Program version:.*`)
 	kernelVersionRegex := regexp.MustCompile(`Kernel version:.*`)
-	lastTimeSyncRegex := regexp.MustCompile(`.*Last time synchronization.*\n?`)
+	lastTimeSyncRegex := regexp.MustCompile(`.*Latest time synchronization.*\n?`)
 	longExecutionRegex := regexp.MustCompile(`.*had a long execution.*\n?`)
 
 	log = lynisRegex.ReplaceAllString(log, "Lynis x.x.x")

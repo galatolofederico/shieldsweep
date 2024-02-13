@@ -23,8 +23,8 @@
                 <tr>
                     <th scope="col">Tool</th>
                     <th scope="col">Status</th>
-                    <th scope="col">Last Run</th>
-                    <th scope="col">Last Log Update</th>
+                    <th scope="col">Latest Run</th>
+                    <th scope="col">Latest Log Update</th>
                 </tr>
             </thead>
             <tbody>
@@ -32,8 +32,8 @@
                 <tr onclick="window.location='/tool/{{.Name}}';" style="cursor:pointer;" class="table-{{.State | stateToClass}}">
                     <td>{{.Name}}</td>
                     <td>{{.State}}</td>
-                    <td>{{.LastRun}}</td>
-                    <td>{{.LastLogChange}}</td>
+                    <td>{{.LatestRun}}</td>
+                    <td>{{.LatestLogChange}}</td>
                 </tr>
                 {{end}}
             </tbody>            

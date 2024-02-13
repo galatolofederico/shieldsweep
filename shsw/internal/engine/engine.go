@@ -67,7 +67,7 @@ func NewEngine(home string) *Engine {
 		if runner.Check() {
 			color.Green("[+] Tool " + config.Name + " found")
 			toolConfig := tools.Tool{
-				State:          tools.ToolState{LastRun: "never", LastLogHash: "none"},
+				State:          tools.ToolState{LatestRun: "never", LatestLogHash: "none"},
 				Runner:         runner,
 				Name:           config.Name,
 				LogsPath:       filepath.Join(home, config.Name, "logs"),
@@ -178,11 +178,11 @@ func (engine *Engine) GetToolStates() []messages.ToolStateReply {
 	ret := []messages.ToolStateReply{}
 	for _, tool := range engine.tools {
 		ret = append(ret, messages.ToolStateReply{
-			Name:          tool.Name,
-			State:         tool.State.State,
-			LastRun:       tool.State.LastRun,
-			LastLogChange: tool.State.LastLogChange,
-			LastError:     tool.State.LastError,
+			Name:            tool.Name,
+			State:           tool.State.State,
+			LatestRun:       tool.State.LatestRun,
+			LatestLogChange: tool.State.LatestLogChange,
+			LatestError:     tool.State.LatestError,
 		})
 	}
 	return ret

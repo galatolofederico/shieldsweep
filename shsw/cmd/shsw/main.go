@@ -54,8 +54,8 @@ func main() {
 			color.White("[-] SHSW is ready to scan")
 		}
 		for _, tool := range response.Tools {
-			lastRun := utils.DaysAgo(tool.LastRun)
-			lastLogChange := utils.DaysAgo(tool.LastLogChange)
+			lastRun := utils.DaysAgo(tool.LatestRun)
+			lastLogChange := utils.DaysAgo(tool.LatestLogChange)
 			toolInfo := fmt.Sprintf("(last run: %s, last log change: %s)", lastRun, lastLogChange)
 			switch tool.State {
 			case "ready":
@@ -79,9 +79,9 @@ func main() {
 		raw := utils.Get(httpc, "http://unix/logs/"+tool)
 		var response messages.LogsReply
 		json.Unmarshal(raw, &response)
-		lastLogChange := utils.DaysAgo(response.LastLogChange)
+		lastLogChange := utils.DaysAgo(response.LatestLogChange)
 		color.Green("[!] Log for " + response.Tool)
-		color.Green("[!] Last log change: " + lastLogChange)
+		color.Green("[!] Latest log change: " + lastLogChange)
 		color.White("[!] Available logs:")
 		for i, log := range response.Logs {
 			color.White(fmt.Sprintf("(id: %d) %v", i, log))
@@ -96,13 +96,13 @@ func main() {
 		raw := utils.Get(httpc, "http://unix/log/"+tool)
 		var response messages.LogReply
 		json.Unmarshal(raw, &response)
-		lastLogChange := utils.DaysAgo(response.LastLogChange)
+		lastLogChange := utils.DaysAgo(response.LatestLogChange)
 		color.Green("[!] Log for " + response.Tool)
-		color.Green("[!] Last log change: " + lastLogChange)
+		color.Green("[!] Latest log change: " + lastLogChange)
 		color.White(response.Log)
-		if response.LastError != "" {
+		if response.LatestError != "" {
 			color.Red("[!] Error log found")
-			color.Red(response.LastError)
+			color.Red(response.LatestError)
 		}
 	default:
 		fmt.Println("Usage: shsw [run|status|log]")

@@ -16,10 +16,10 @@ import (
 )
 
 type ToolStatus struct {
-	Name          string
-	State         string
-	LastRun       string
-	LastLogChange string
+	Name            string
+	State           string
+	LatestRun       string
+	LatestLogChange string
 }
 
 type StatusPageData struct {
@@ -45,10 +45,10 @@ func statusHandler(c *fiber.Ctx) error {
 
 	for i, tool := range response.Tools {
 		statusData.ToolsStatus[i] = ToolStatus{
-			Name:          tool.Name,
-			State:         tool.State,
-			LastRun:       utils.DaysAgo(tool.LastRun),
-			LastLogChange: utils.DaysAgo(tool.LastLogChange),
+			Name:            tool.Name,
+			State:           tool.State,
+			LatestRun:       utils.DaysAgo(tool.LatestRun),
+			LatestLogChange: utils.DaysAgo(tool.LatestLogChange),
 		}
 	}
 
@@ -79,12 +79,12 @@ func toolDetailHandler(c *fiber.Ctx) error {
 	}
 
 	return c.Render("views/tool_detail", fiber.Map{
-		"Name":          toolName,
-		"State":         response.State,
-		"LastRun":       utils.DaysAgo(response.LastRun),
-		"LastLogChange": utils.DaysAgo(response.LastLogChange),
-		"Logs":          response.Log,
-		"Errors":        response.LastError,
+		"Name":            toolName,
+		"State":           response.State,
+		"LatestRun":       utils.DaysAgo(response.LatestRun),
+		"LatestLogChange": utils.DaysAgo(response.LatestLogChange),
+		"Logs":            response.Log,
+		"Errors":          response.LatestError,
 	}, "views/tool_detail")
 }
 

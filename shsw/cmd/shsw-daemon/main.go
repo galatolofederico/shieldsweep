@@ -62,10 +62,10 @@ func main() {
 			return c.Status(404).SendString("Tool not found")
 		}
 		return c.JSON(messages.LogsReply{
-			Tool:          tool.Name,
-			LastLogChange: tool.State.LastLogChange,
-			LastRun:       tool.State.LastRun,
-			Logs:          tool.GetLogs(),
+			Tool:            tool.Name,
+			LatestLogChange: tool.State.LatestLogChange,
+			LatestRun:       tool.State.LatestRun,
+			Logs:            tool.GetLogs(),
 		})
 	})
 
@@ -79,12 +79,12 @@ func main() {
 		logs := tool.GetLogs()
 		if len(logs) <= 0 {
 			return c.JSON(messages.LogReply{
-				Tool:          tool.Name,
-				State:         tool.State.State,
-				LastLogChange: "never",
-				LastRun:       tool.State.LastRun,
-				LastError:     tool.GetLastError(),
-				Log:           "No logs available",
+				Tool:            tool.Name,
+				State:           tool.State.State,
+				LatestLogChange: "never",
+				LatestRun:       tool.State.LatestRun,
+				LatestError:     tool.GetLatestError(),
+				Log:             "No logs available",
 			})
 		}
 		if logid < 0 || logid >= len(logs) {
@@ -96,12 +96,12 @@ func main() {
 		}
 
 		return c.JSON(messages.LogReply{
-			Tool:          tool.Name,
-			State:         tool.State.State,
-			LastLogChange: tool.State.LastLogChange,
-			LastRun:       tool.State.LastRun,
-			LastError:     tool.GetLastError(),
-			Log:           string(log),
+			Tool:            tool.Name,
+			State:           tool.State.State,
+			LatestLogChange: tool.State.LatestLogChange,
+			LatestRun:       tool.State.LatestRun,
+			LatestError:     tool.GetLatestError(),
+			Log:             string(log),
 		})
 	})
 
