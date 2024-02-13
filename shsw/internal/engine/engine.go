@@ -74,6 +74,9 @@ func NewEngine(home string) *Engine {
 				CurrentLogFile: "",
 				StateFile:      filepath.Join(home, config.Name, "state", "state.json"),
 			}
+			if _, err := os.Stat(toolConfig.LogsPath); os.IsNotExist(err) {
+				os.MkdirAll(toolConfig.LogsPath, os.ModePerm)
+			}
 			toolConfig.Load()
 			toolConfig.CurrentLogFile = toolConfig.GetLatestLog()
 			if toolConfig.CurrentLogFile == "" {
