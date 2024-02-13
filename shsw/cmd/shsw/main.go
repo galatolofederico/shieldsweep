@@ -93,7 +93,8 @@ func main() {
 			os.Exit(1)
 		}
 		tool := command[1]
-		raw := utils.Get(httpc, "http://unix/log/"+tool)
+		logid := command[2]
+		raw := utils.Get(httpc, "http://unix/log/"+tool+"/"+logid)
 		var response messages.LogReply
 		json.Unmarshal(raw, &response)
 		lastLogChange := utils.DaysAgo(response.LatestLogChange)
