@@ -19,6 +19,13 @@ type StatusReply struct {
 	Tools     []ToolStateReply
 }
 
+type LogsReply struct {
+	Tool          string
+	LastLogChange string
+	LastRun       string
+	Logs          []string
+}
+
 type LogReply struct {
 	Tool          string
 	State         string

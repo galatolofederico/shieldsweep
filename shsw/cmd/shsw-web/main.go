@@ -104,6 +104,7 @@ func main() {
 		color.Red("[!] Is the daemon running?\n")
 	}
 	httpc = utils.GetUnixClient(sock)
+	utils.Get(httpc, "http://unix/health")
 
 	engine := html.NewFileSystem(http.FS(embedDirStatic), ".html")
 
@@ -125,7 +126,9 @@ func main() {
 	})
 
 	app := fiber.New(fiber.Config{
-		Views: engine,
+		Views:        engine,
+		ServerHeader: "shsw-web",
+		AppName:      "shsw-web",
 	})
 
 	app.Get("/", statusHandler)

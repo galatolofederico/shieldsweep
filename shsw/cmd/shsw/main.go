@@ -70,9 +70,26 @@ func main() {
 				color.Cyan("[+] " + tool.Name + " finished " + toolInfo)
 			}
 		}
-	case "log":
+	case "logs":
 		if len(command) < 2 {
-			fmt.Println("Usage: shsw log <tool>")
+			fmt.Println("Usage: shsw logs <tool>")
+			os.Exit(1)
+		}
+		tool := command[1]
+		raw := utils.Get(httpc, "http://unix/logs/"+tool)
+		var response messages.LogsReply
+		json.Unmarshal(raw, &response)
+		lastLogChange := utils.DaysAgo(response.LastLogChange)
+		color.Green("[!] Log for " + response.Tool)
+		color.Green("[!] Last log change: " + lastLogChange)
+		color.White("[!] Available logs:")
+		for i, log := range response.Logs {
+			color.White(fmt.Sprintf("(id: %d) %v", i, log))
+		}
+
+	case "log":
+		if len(command) < 3 {
+			fmt.Println("Usage: shsw log <tool> <log-id>")
 			os.Exit(1)
 		}
 		tool := command[1]

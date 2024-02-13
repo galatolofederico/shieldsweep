@@ -77,7 +77,7 @@ func NewEngine(home string) *Engine {
 			toolConfig.Load()
 			toolConfig.CurrentLogFile = toolConfig.GetLatestLog()
 			if toolConfig.CurrentLogFile == "" {
-				toolConfig.CurrentLogFile = filepath.Join(home, config.Name, "state", "tmp.log")
+				toolConfig.CurrentLogFile = filepath.Join(home, config.Name, "state", "tmp.txt")
 			}
 			if engine.GetTool(config.Name) != nil {
 				panic(errors.Errorf("Duplicate tool name: %v\n", config.Name))

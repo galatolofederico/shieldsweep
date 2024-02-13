@@ -5,6 +5,7 @@ import (
 	"net"
 	"os"
 	"path/filepath"
+	"strconv"
 
 	"github.com/galatolofederico/shieldsweep/shsw/internal/engine"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
@@ -26,6 +27,10 @@ func main() {
 	app := fiber.New(fiber.Config{
 		ServerHeader: "shsw-daemon",
 		AppName:      "shsw-daemon",
+	})
+
+	app.Get("/health", func(c *fiber.Ctx) error {
+		return c.SendString("OK")
 	})
 
 	app.Get("/run", func(c *fiber.Ctx) error {
@@ -50,19 +55,53 @@ func main() {
 		})
 	})
 
-	app.Get("/log/:tool", func(c *fiber.Ctx) error {
+	app.Get("/logs/:tool", func(c *fiber.Ctx) error {
 		toolname := c.Params("tool")
 		tool := engine.GetTool(toolname)
 		if tool == nil {
 			return c.Status(404).SendString("Tool not found")
 		}
+		return c.JSON(messages.LogsReply{
+			Tool:          tool.Name,
+			LastLogChange: tool.State.LastLogChange,
+			LastRun:       tool.State.LastRun,
+			Logs:          tool.GetLogs(),
+		})
+	})
+
+	app.Get("/log/:tool/:id?", func(c *fiber.Ctx) error {
+		toolname := c.Params("tool")
+		logid, _ := strconv.Atoi(c.Params("id"))
+		tool := engine.GetTool(toolname)
+		if tool == nil {
+			return c.Status(404).SendString("Tool not found")
+		}
+		logs := tool.GetLogs()
+		if len(logs) <= 0 {
+			return c.JSON(messages.LogReply{
+				Tool:          tool.Name,
+				State:         tool.State.State,
+				LastLogChange: "never",
+				LastRun:       tool.State.LastRun,
+				LastError:     tool.GetLastError(),
+				Log:           "No logs available",
+			})
+		}
+		if logid < 0 || logid >= len(logs) {
+			logid = 0
+		}
+		log, err := os.ReadFile(logs[logid])
+		if err != nil {
+			log = []byte("Error reading log")
+		}
+
 		return c.JSON(messages.LogReply{
 			Tool:          tool.Name,
 			State:         tool.State.State,
 			LastLogChange: tool.State.LastLogChange,
 			LastRun:       tool.State.LastRun,
-			Log:           tool.GetLog(),
 			LastError:     tool.GetLastError(),
+			Log:           string(log),
 		})
 	})
 

@@ -128,19 +128,10 @@ func (tool *Tool) Save() {
 	}
 }
 
-func (tool *Tool) GetLog() string {
-	utils.CheckPathForFile(tool.CurrentLogFile)
-	dat, err := os.ReadFile(tool.CurrentLogFile)
-	if err != nil {
-		return "Log file not found"
-	}
-	return string(dat)
-}
-
-func (tool *Tool) GetLatestLog() string {
+func (tool *Tool) GetLogs() []string {
 	files, err := os.ReadDir(tool.LogsPath)
 	if err != nil {
-		return "Error reading log files"
+		panic(errors.Wrap(err, "Cant read the logs path"))
 	}
 
 	var dates []time.Time
@@ -159,13 +150,26 @@ func (tool *Tool) GetLatestLog() string {
 		return dates[i].After(dates[j])
 	})
 
-	if len(dates) > 0 {
-		latestDate := dates[0]
-		latestDateStr := latestDate.Format("2006-01-02 15:04:05")
-		return filepath.Join(tool.LogsPath, latestDateStr+".log")
+	var logs []string
+	for _, date := range dates {
+		stringDate := date.Format("2006-01-02 15:04:05")
+		logs = append(logs, filepath.Join(tool.LogsPath, stringDate+".txt"))
+	}
+
+	return logs
+}
+
+func (tool *Tool) GetLogById(index int) string {
+	logs := tool.GetLogs()
+	if index < len(logs) {
+		return logs[index]
 	}
 
 	return ""
+}
+
+func (tool *Tool) GetLatestLog() string {
+	return tool.GetLogById(0)
 }
 
 func (tool *Tool) GetLastError() string {
