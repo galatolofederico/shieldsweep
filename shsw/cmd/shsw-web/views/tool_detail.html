@@ -28,26 +28,31 @@
             </tbody>
         </table>
 
-        <label for="picker" class="form-label">Pick date</label>
-        <input
-            class="form-control"
-            list="data"
-            id="picker"
-            placeholder="Click or type to search..."
-            onmouseover="focus()" 
-            oninput="onInput()"
-        >
+        <div class="row justify-content-center mt-4">
+            <div class="col-4">
+                <input
+                    class="form-control form-control-lg"
+                    list="data"
+                    id="picker"
+                    placeholder="{{ .LogDate }}"
+                    oninput="onInput()"
+                >
+            </div>
+        </div>
 
         <datalist id="data">
             {{ range $id, $data := .Logs }}
-                <option data-value="{{ $id }}" value="{{ $data | fileToDate }}" label="{{ $data | fileToDate }}"></option>
+                <option
+                    data-value="{{ $id }}"
+                    value="{{ $data | fileToDate }}"
+                    label="{{ $data | fileToDate }}"
+                ></option>
             {{ end }}
         </datalist>
-    
 
-        <h2>Log</h2>
+        <h2 class="mt-4">Log</h2>
         <pre>{{.Log}}</pre>
-        <h2>Errors</h2>
+        <h2 class="mt-4">Errors</h2>
         <pre>{{.Error}}</pre>
     </div>
 
@@ -56,7 +61,6 @@
             var val = document.getElementById("picker").value;
             var opts = document.getElementById('data').children;
             for (var i = 0; i < opts.length; i++) {
-                console.log(opts[i].value, val);
                 if (opts[i].value === val) {
                     window.location = "/tool/{{.Name}}/" + opts[i].getAttribute('data-value');
                     break;

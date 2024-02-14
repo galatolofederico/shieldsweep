@@ -77,8 +77,8 @@ func toolDetailHandler(c *fiber.Ctx) error {
 	toolName := c.Params("toolName")
 	logId, _ := strconv.Atoi(c.Params("logId"))
 	raw := utils.Get(httpc, "http://unix/log/"+toolName+"/"+strconv.Itoa(logId))
-	var response messages.LogReply
-	if err := json.Unmarshal(raw, &response); err != nil {
+	var logResponse messages.LogReply
+	if err := json.Unmarshal(raw, &logResponse); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error parsing log response")
 	}
 	raw = utils.Get(httpc, "http://unix/logs/"+toolName)
@@ -89,12 +89,13 @@ func toolDetailHandler(c *fiber.Ctx) error {
 
 	return c.Render("views/tool_detail", fiber.Map{
 		"Name":            toolName,
-		"State":           response.State,
-		"LatestRun":       utils.DaysAgo(response.LatestRun),
-		"LatestLogChange": utils.DaysAgo(response.LatestLogChange),
+		"State":           logResponse.State,
+		"LatestRun":       utils.DaysAgo(logResponse.LatestRun),
+		"LatestLogChange": utils.DaysAgo(logResponse.LatestLogChange),
+		"LogDate":         logResponse.LogDate,
 		"Logs":            logsResponse.Logs,
-		"Log":             response.Log,
-		"Error":           response.LatestError,
+		"Log":             logResponse.Log,
+		"Error":           logResponse.LatestError,
 	}, "views/tool_detail")
 }
 

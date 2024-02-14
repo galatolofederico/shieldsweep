@@ -84,6 +84,7 @@ func main() {
 				LatestLogChange: "never",
 				LatestRun:       tool.State.LatestRun,
 				LatestError:     tool.GetLatestError(),
+				LogDate:         "never",
 				Log:             "No logs available",
 			})
 		}
@@ -101,6 +102,7 @@ func main() {
 			LatestLogChange: tool.State.LatestLogChange,
 			LatestRun:       tool.State.LatestRun,
 			LatestError:     tool.GetLatestError(),
+			LogDate:         tool.GetLogsDates()[logid].Format("2006-01-02 15:04:05"),
 			Log:             string(log),
 		})
 	})

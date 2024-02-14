@@ -31,6 +31,7 @@ type LogReply struct {
 	State           string
 	LatestLogChange string
 	LatestRun       string
-	Log             string
 	LatestError     string
+	Log             string
+	LogDate         string
 }

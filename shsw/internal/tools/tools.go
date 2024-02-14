@@ -128,7 +128,7 @@ func (tool *Tool) Save() {
 	}
 }
 
-func (tool *Tool) GetLogs() []string {
+func (tool *Tool) GetLogsDates() []time.Time {
 	files, err := os.ReadDir(tool.LogsPath)
 	if err != nil {
 		panic(errors.Wrap(err, "Cant read the logs path"))
@@ -149,6 +149,12 @@ func (tool *Tool) GetLogs() []string {
 	sort.Slice(dates, func(i, j int) bool {
 		return dates[i].After(dates[j])
 	})
+
+	return dates
+}
+
+func (tool *Tool) GetLogs() []string {
+	dates := tool.GetLogsDates()
 
 	var logs []string
 	for _, date := range dates {
