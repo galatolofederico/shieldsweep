@@ -19,7 +19,7 @@ daemon: $(SRC)
 
 cli: $(SRC)
 	mkdir -p bin
-	cd shsw; go build $(LDFLAGS) -o ../bin/shsw ./cmd/shsw/main.go
+	cd shsw; go build $(LDFLAGS) -o ../bin/shsw ./cmd/shsw-cli/main.go
 
 web: $(SRC)
 	mkdir -p bin

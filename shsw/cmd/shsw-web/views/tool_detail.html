@@ -78,12 +78,11 @@
             for (var i = 0; i < dates.length; i++) {
                 dates[i].addEventListener('click', function () {
                     var id = this.getAttribute('data-value');
-                    window.location.href = '/tool/{{.Name}}/' + id; // Redirecting to the specified URL
+                    window.location.href = '/tool/{{.Name}}/' + id;
                 });
             }
         });
     </script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0/dist/js/bootstrap.bundle.min.js"></script>
-
+    <script src="/assets/bootstrap.bundle.min.js"></script>
 </body>
 </html>
