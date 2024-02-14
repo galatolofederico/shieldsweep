@@ -1,7 +1,6 @@
 package tools
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"regexp"
@@ -56,7 +55,6 @@ func (runner *RKHunterRunner) Run(tool Tool) error {
 	// so i need to remove the temp file befor running it
 	// and also defer the removal for actual cleanup
 
-	fmt.Println(tmpFile.Name())
 	cmd := exec.Command(
 		runner.config.Path,
 		"-c",

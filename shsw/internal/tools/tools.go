@@ -2,7 +2,6 @@ package tools
 
 import (
 	"encoding/json"
-	"fmt"
 	"os"
 	"path/filepath"
 	"sort"
@@ -77,8 +76,6 @@ func (tool *Tool) Run(ch chan<- ToolResult) {
 	}
 
 	if err != nil {
-		fmt.Print(("CIAOOO"))
-		fmt.Println(err)
 		tool.State.LatestError = err.Error()
 		tool.State.State = Failed
 		result.Error = err
