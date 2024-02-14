@@ -29,7 +29,7 @@
             </thead>
             <tbody>
                 {{range .ToolsStatus}}
-                <tr onclick="window.location='/tool/{{.Name}}';" style="cursor:pointer;" class="table-{{.State | stateToClass}}">
+                <tr onclick="window.location='/tool/{{.Name}}/0';" style="cursor:pointer;" class="table-{{.State | stateToClass}}">
                     <td>{{.Name}}</td>
                     <td>{{.State}}</td>
                     <td>{{.LatestRun}}</td>

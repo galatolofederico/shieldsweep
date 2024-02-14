@@ -27,10 +27,48 @@
                 </tr>
             </tbody>
         </table>
-        <h2>Logs</h2>
-        <pre>{{.Logs}}</pre>
+
+        <input
+            id="picker"
+            list="data"  
+            onmouseover="focus();old = value;" 
+            onmousedown="inputFocus();" 
+            onmouseup="value = old"
+            oninput="onInput()"
+        />
+    
+        <datalist id="data">
+            {{ range $id, $data := .Logs }}
+                <option value="{{ $id }}" label="{{ $data | fileToDate }}"></option>
+            {{ end }}
+        </datalist>
+    
+
+        <h2>Log</h2>
+        <pre>{{.Log}}</pre>
         <h2>Errors</h2>
-        <pre>{{.Errors}}</pre>
+        <pre>{{.Error}}</pre>
     </div>
+
+    <script type="text/javascript">
+        function onInput() {
+            var val = document.getElementById("picker").value;
+            var opts = document.getElementById('data').children;
+            for (var i = 0; i < opts.length; i++) {
+                if (opts[i].value === val) {
+                    window.location = "/tool/{{.Name}}/" + val;
+                    break;
+                }
+            }
+        }
+        function inputFocus(){
+            var input = document.getElementById("picker");
+            if(input.value == ""){
+                value = '';
+            }else{
+                old = value = input.label;
+            }
+        }
+    </script>
 </body>
 </html>

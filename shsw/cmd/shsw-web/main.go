@@ -7,6 +7,8 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strconv"
+	"strings"
 
 	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
@@ -73,10 +75,16 @@ func startScanHandler(c *fiber.Ctx) error {
 
 func toolDetailHandler(c *fiber.Ctx) error {
 	toolName := c.Params("toolName")
-	raw := utils.Get(httpc, "http://unix/log/"+toolName)
+	logId, _ := strconv.Atoi(c.Params("logId"))
+	raw := utils.Get(httpc, "http://unix/log/"+toolName+"/"+strconv.Itoa(logId))
 	var response messages.LogReply
 	if err := json.Unmarshal(raw, &response); err != nil {
 		return c.Status(fiber.StatusInternalServerError).SendString("Error parsing log response")
+	}
+	raw = utils.Get(httpc, "http://unix/logs/"+toolName)
+	var logsResponse messages.LogsReply
+	if err := json.Unmarshal(raw, &logsResponse); err != nil {
+		return c.Status(fiber.StatusInternalServerError).SendString("Error parsing logs response")
 	}
 
 	return c.Render("views/tool_detail", fiber.Map{
@@ -84,8 +92,9 @@ func toolDetailHandler(c *fiber.Ctx) error {
 		"State":           response.State,
 		"LatestRun":       utils.DaysAgo(response.LatestRun),
 		"LatestLogChange": utils.DaysAgo(response.LatestLogChange),
-		"Logs":            response.Log,
-		"Errors":          response.LatestError,
+		"Logs":            logsResponse.Logs,
+		"Log":             response.Log,
+		"Error":           response.LatestError,
 	}, "views/tool_detail")
 }
 
@@ -129,6 +138,12 @@ func main() {
 		}
 	})
 
+	engine.AddFunc("fileToDate", func(fname string) string {
+		parts := strings.Split(fname, "/")
+		date := strings.Split(parts[len(parts)-1], ".")[0]
+		return date
+	})
+
 	app := fiber.New(fiber.Config{
 		Views:        engine,
 		ServerHeader: "shsw-web",
@@ -137,7 +152,7 @@ func main() {
 
 	app.Get("/", statusHandler)
 	app.Post("/start-scan", startScanHandler)
-	app.Get("/tool/:toolName", toolDetailHandler)
+	app.Get("/tool/:toolName/:logId", toolDetailHandler)
 
 	app.Use("/assets", filesystem.New(filesystem.Config{
 		Root:       http.FS(embedDirAssets),
