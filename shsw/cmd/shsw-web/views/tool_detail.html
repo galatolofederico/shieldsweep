@@ -28,18 +28,19 @@
             </tbody>
         </table>
 
+        <label for="picker" class="form-label">Pick date</label>
         <input
+            class="form-control"
+            list="data"
             id="picker"
-            list="data"  
-            onmouseover="focus();old = value;" 
-            onmousedown="inputFocus();" 
-            onmouseup="value = old"
+            placeholder="Click or type to search..."
+            onmouseover="focus()" 
             oninput="onInput()"
-        />
-    
+        >
+
         <datalist id="data">
             {{ range $id, $data := .Logs }}
-                <option value="{{ $id }}" label="{{ $data | fileToDate }}"></option>
+                <option data-value="{{ $id }}" value="{{ $data | fileToDate }}" label="{{ $data | fileToDate }}"></option>
             {{ end }}
         </datalist>
     
@@ -55,18 +56,11 @@
             var val = document.getElementById("picker").value;
             var opts = document.getElementById('data').children;
             for (var i = 0; i < opts.length; i++) {
+                console.log(opts[i].value, val);
                 if (opts[i].value === val) {
-                    window.location = "/tool/{{.Name}}/" + val;
+                    window.location = "/tool/{{.Name}}/" + opts[i].getAttribute('data-value');
                     break;
                 }
-            }
-        }
-        function inputFocus(){
-            var input = document.getElementById("picker");
-            if(input.value == ""){
-                value = '';
-            }else{
-                old = value = input.label;
             }
         }
     </script>
