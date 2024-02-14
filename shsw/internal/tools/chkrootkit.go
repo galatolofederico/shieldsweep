@@ -6,6 +6,7 @@ import (
 	"regexp"
 	"strings"
 
+	"github.com/galatolofederico/shieldsweep/shsw/internal/utils"
 	"github.com/pkg/errors"
 )
 
@@ -37,7 +38,7 @@ func (runner *ChkRootkitRunner) Check() bool {
 }
 
 func (runner *ChkRootkitRunner) Run(tool Tool) error {
-	if _, err := os.Stat(tool.CurrentLogFile); !os.IsNotExist(err) {
+	if utils.FileExists(tool.CurrentLogFile) {
 		os.Remove(tool.CurrentLogFile)
 	}
 
