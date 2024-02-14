@@ -25,5 +25,5 @@ Here's a table outlining the current and planned features for Shieldsweep ( :con
 | CLI interface                                 |  :white_check_mark:   |
 | Web interface                                 |  :white_check_mark:   |
 | Notifications                                 |  :white_check_mark:   |
-| Log history                                   |  :construction:   |
+| Log history                                   |  :white_check_mark:   |
 | Telegram bot                                  |  :construction:   |
