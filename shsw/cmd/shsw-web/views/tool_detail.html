@@ -9,6 +9,7 @@
 <body>
     <div class="container mt-3">
         <h1>Details for {{.Name}}</h1>
+
         <table class="table mt-3">
             <tbody>
                 <tr>
@@ -28,27 +29,26 @@
             </tbody>
         </table>
 
-        <div class="row justify-content-center mt-4">
-            <div class="col-4">
-                <input
-                    class="form-control form-control-lg"
-                    list="data"
-                    id="picker"
-                    placeholder="{{ .LogDate }}"
-                    oninput="onInput()"
-                >
+        <div class="row justify-content-md-center mt-4">
+            <div class="col-md-auto">
+                <h3>Log Date: {{.LogDate}}</h3>
+            </div>
+            <div class="col-md-auto">
+                <div class="dropdown text-center ml-auto">
+                    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+                        Select Date
+                    </button>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                        <input class="form-control" id="dateFilterInput" type="text" placeholder="Filter dates...">
+                        <div id="dateList" class="date-list">
+                            {{ range $id, $data := .Logs }}
+                            <a class="dropdown-item date-item" href="#" data-value="{{ $id }}">{{ $data | fileToDate }}</a>
+                            {{ end }}
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-
-        <datalist id="data">
-            {{ range $id, $data := .Logs }}
-                <option
-                    data-value="{{ $id }}"
-                    value="{{ $data | fileToDate }}"
-                    label="{{ $data | fileToDate }}"
-                ></option>
-            {{ end }}
-        </datalist>
 
         <h2 class="mt-4">Log</h2>
         <pre>{{.Log}}</pre>
@@ -57,16 +57,33 @@
     </div>
 
     <script type="text/javascript">
-        function onInput() {
-            var val = document.getElementById("picker").value;
-            var opts = document.getElementById('data').children;
-            for (var i = 0; i < opts.length; i++) {
-                if (opts[i].value === val) {
-                    window.location = "/tool/{{.Name}}/" + opts[i].getAttribute('data-value');
-                    break;
+        document.addEventListener('DOMContentLoaded', function () {
+            var filterInput = document.getElementById('dateFilterInput');
+            var dateList = document.getElementById('dateList');
+            var dates = dateList.getElementsByClassName('date-item');
+
+            filterInput.addEventListener('keyup', function () {
+                var filterValue = this.value.toLowerCase();
+
+                for (var i = 0; i < dates.length; i++) {
+                    var dateText = dates[i].textContent || dates[i].innerText;
+                    if (dateText.toLowerCase().indexOf(filterValue) > -1) {
+                        dates[i].style.display = "";
+                    } else {
+                        dates[i].style.display = "none";
+                    }
                 }
+            });
+
+            for (var i = 0; i < dates.length; i++) {
+                dates[i].addEventListener('click', function () {
+                    var id = this.getAttribute('data-value');
+                    window.location.href = '/tool/{{.Name}}/' + id; // Redirecting to the specified URL
+                });
             }
-        }
+        });
     </script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0/dist/js/bootstrap.bundle.min.js"></script>
+
 </body>
 </html>
