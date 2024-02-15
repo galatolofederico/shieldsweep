@@ -76,6 +76,42 @@ shsw-web
 
 You will find the dashboard at `http://localhost:3000/`
 
+## Configuration
+
+You can edit the configuration file `/etc/shsw/shsw.json` to enable/disable tools, specify settings for each tool, adjust the level of parallelism, and set up custom notification commands.
+
+```json
+{
+    "parallelism": 2,
+    "notifications": [
+        {
+            "type": "command",
+            "config": {
+                "command": [
+                    "/bin/sh",
+                    "-c",
+                    "wall \"New logs available in Shieldsweep\""
+                ]
+            }
+        }
+    ],
+    "tools": [
+        {
+            "name": "rkhunter",
+            "enabled": true
+        },
+        {
+            "name": "chkrootkit",
+            "enabled": true
+        },
+        {
+            "name": "lynis",
+            "enabled": true
+        }
+    ]
+}
+```
+
 ## License 
 
 shieldsweep is released under the GNU General Public License v3.0 (GPLv3).
