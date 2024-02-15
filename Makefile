@@ -36,9 +36,15 @@ install:
 	mkdir -p /etc/shsw
 	cp ./config/shsw.json /etc/shsw/shsw.json
 
-	cp ./config/shsw.service /etc/systemd/system/shsw.service
-	systemctl enable shsw
-	systemctl start shsw
+	@if [ "$$(ps --no-headers -o comm 1)" = "systemd" ]; then \
+		echo "Systemd detected, installing service..."; \
+		cp ./config/shsw.service /etc/systemd/system/shsw.service; \
+		systemctl enable shsw; \
+		systemctl start shsw; \
+	else \
+		echo "Systemd not detected. Skipping service installation."; \
+		echo "Setup your system to run shsw-daemon on startup."; \
+	fi
 
 uninstall: clean
 	rm -f /usr/local/bin/shsw
