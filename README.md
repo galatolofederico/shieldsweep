@@ -112,6 +112,13 @@ You can edit the configuration file `/etc/shsw/shsw.json` to enable/disable tool
 }
 ```
 
+## Development
+
+Current development backlog:
+- [ ] Daemon interaction refactor: create a common (non-internal) package to interact with the daemon (used by cli, web, telegram, etc...) to abstract the HTTP over unix socket interface.
+- [ ] Create a CI/CD pipeline to build and release the software
+- [ ] Write a simple script just to handle Telegram notifications (to be used while the actual Telegram client is in development)
+
 ## License 
 
 shieldsweep is released under the GNU General Public License v3.0 (GPLv3).
