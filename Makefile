@@ -36,6 +36,10 @@ install:
 	mkdir -p /etc/shsw
 	cp ./config/shsw.json /etc/shsw/shsw.json
 
+	cp ./config/shsw.service /etc/systemd/system/shsw.service
+	systemctl enable shsw
+	systemctl start shsw
+
 uninstall: clean
 	rm -f /usr/local/bin/shsw
 	rm -f /usr/local/bin/shsw-daemon
