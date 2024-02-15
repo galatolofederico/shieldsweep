@@ -9,6 +9,7 @@ import (
 	"path/filepath"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/fatih/color"
 	"github.com/galatolofederico/shieldsweep/shsw/internal/messages"
@@ -160,5 +161,10 @@ func main() {
 		PathPrefix: "assets",
 		Browse:     true,
 	}))
-	app.Listen(":3000")
+	go func() {
+		time.Sleep(1 * time.Second)
+		color.Green("[!] Web interface available at: http://127.0.0.1:3000\n")
+	}()
+
+	app.Listen("127.0.0.1:3000")
 }
