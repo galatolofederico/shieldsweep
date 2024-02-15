@@ -29,7 +29,7 @@ func main() {
 	command := flag.Args()
 
 	if len(command) < 1 {
-		fmt.Println("Usage: shsw [run|status|log]")
+		fmt.Println("Usage: shsw [run|status|list|log]")
 		os.Exit(1)
 	}
 
@@ -70,9 +70,9 @@ func main() {
 				color.Cyan("[+] " + tool.Name + " finished " + toolInfo)
 			}
 		}
-	case "logs":
+	case "list":
 		if len(command) < 2 {
-			fmt.Println("Usage: shsw logs <tool>")
+			fmt.Println("Usage: shsw list <tool>")
 			os.Exit(1)
 		}
 		tool := command[1]
@@ -90,6 +90,7 @@ func main() {
 	case "log":
 		if len(command) < 3 {
 			fmt.Println("Usage: shsw log <tool> <log-id>")
+			fmt.Println("Use shsw list <tool> to get the log ids")
 			os.Exit(1)
 		}
 		tool := command[1]
@@ -106,6 +107,6 @@ func main() {
 			color.Red(response.LatestError)
 		}
 	default:
-		fmt.Println("Usage: shsw [run|status|log]")
+		fmt.Println("Usage: shsw [run|status|list|log]")
 	}
 }
